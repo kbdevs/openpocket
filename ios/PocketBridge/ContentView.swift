@@ -300,39 +300,38 @@ struct RecordingDetailView: View {
     private func playback(_ item: Recording) -> some View {
         let currentTime = audio.activeID == id ? audio.currentTime : 0
         let duration = audio.activeID == id ? audio.duration : item.duration
-        return VStack(spacing: 12) {
-            Slider(value: Binding(get: { currentTime }, set: { audio.seek($0) }), in: 0...max(1, duration))
-                .accessibilityLabel("Playback position")
+        return VStack(spacing: 10) {
+            Scrubber(value: currentTime, total: max(1, duration)) { audio.seek($0) }
             HStack {
                 Text(timeLabel(currentTime))
                 Spacer()
-                Text(timeLabel(duration))
-            }.font(.caption.monospacedDigit()).foregroundStyle(.secondary)
-            HStack(spacing: 24) {
+                Text("-" + timeLabel(max(0, duration - currentTime)))
+            }.font(.caption2.monospacedDigit()).foregroundStyle(.secondary)
+            HStack {
+                Menu {
+                    ForEach([0.75, 1.0, 1.25, 1.5, 2.0], id: \.self) { speed in Button("\(speed.formatted())×") { audio.rate = Float(speed) } }
+                } label: { Text("\(Double(audio.rate).formatted())×").font(.subheadline.weight(.semibold)).monospacedDigit().frame(width: 44, height: 44) }
+                    .accessibilityLabel("Playback speed")
+                    .accessibilityValue("\(Double(audio.rate).formatted()) times")
+                Spacer()
                 Button { audio.skip(-15) } label: {
                     Label("Back 15 seconds", systemImage: "gobackward.15").labelStyle(.iconOnly)
-                        .font(.title2).frame(width: 44, height: 44).contentShape(Rectangle())
+                        .font(.title3).frame(width: 44, height: 44).contentShape(Rectangle())
                 }
                 Button { audio.toggle() } label: {
                     Label(audio.playing ? "Pause" : "Play", systemImage: audio.playing ? "pause.fill" : "play.fill").labelStyle(.iconOnly)
-                        .font(.title2).frame(width: 58, height: 58).background(.indigo, in: Circle()).foregroundStyle(.white)
-                }
+                        .font(.title3).frame(width: 52, height: 52).background(Color.primary, in: Circle()).foregroundStyle(Color(.systemBackground))
+                        .contentTransition(.symbolEffect(.replace))
+                }.padding(.horizontal, 12)
                 Button { audio.skip(15) } label: {
                     Label("Forward 15 seconds", systemImage: "goforward.15").labelStyle(.iconOnly)
-                        .font(.title2).frame(width: 44, height: 44).contentShape(Rectangle())
-                }
-            }.frame(maxWidth: .infinity)
-            HStack {
-                Button { change { try library.update(id) { $0.bookmarks.append(currentTime) } } } label: {
-                    Label("Bookmark", systemImage: "bookmark").font(.caption).frame(minHeight: 44)
+                        .font(.title3).frame(width: 44, height: 44).contentShape(Rectangle())
                 }
                 Spacer()
-                Menu {
-                    ForEach([0.75, 1.0, 1.25, 1.5, 2.0], id: \.self) { speed in Button("\(speed.formatted())×") { audio.rate = Float(speed) } }
-                } label: { Text("\(Double(audio.rate).formatted())×").font(.caption.bold()).frame(minWidth: 44, minHeight: 44) }
-                    .accessibilityLabel("Playback speed")
-                    .accessibilityValue("\(Double(audio.rate).formatted()) times")
-            }
+                Button { change { try library.update(id) { $0.bookmarks.append(currentTime) } } } label: {
+                    Label("Bookmark", systemImage: "bookmark").labelStyle(.iconOnly).font(.body).frame(width: 44, height: 44).contentShape(Rectangle())
+                }
+            }.foregroundStyle(.primary).buttonStyle(.plain)
             if !item.bookmarks.isEmpty {
                 ScrollView(.horizontal) {
                     HStack { ForEach(Array(item.bookmarks.enumerated()), id: \.offset) { index, time in
@@ -439,4 +438,34 @@ private struct ShareSheet: UIViewControllerRepresentable {
     let items: [Any]
     func makeUIViewController(context: Context) -> UIActivityViewController { UIActivityViewController(activityItems: items, applicationActivities: nil) }
     func updateUIViewController(_ controller: UIActivityViewController, context: Context) {}
+}
+
+/// Thin playback bar. The system Slider thumb is too large for this card.
+private struct Scrubber: View {
+    let value: Double
+    let total: Double
+    let seek: (Double) -> Void
+    @State private var dragging: Double?
+
+    var body: some View {
+        GeometryReader { geo in
+            let progress = min(1, max(0, (dragging ?? value) / total))
+            ZStack(alignment: .leading) {
+                Capsule().fill(Color.primary.opacity(0.15))
+                Capsule().fill(Color.primary).frame(width: geo.size.width * progress)
+                Circle().fill(Color.primary).frame(width: dragging == nil ? 10 : 16)
+                    .offset(x: geo.size.width * progress - (dragging == nil ? 5 : 8))
+            }
+            .frame(height: 4).frame(maxHeight: .infinity).contentShape(Rectangle())
+            .animation(.snappy(duration: 0.15), value: dragging == nil)
+            .gesture(DragGesture(minimumDistance: 0)
+                .onChanged { dragging = min(1, max(0, $0.location.x / geo.size.width)) * total }
+                .onEnded { _ in if let dragging { seek(dragging) }; dragging = nil })
+        }
+        .frame(height: 24)
+        .accessibilityElement()
+        .accessibilityLabel("Playback position")
+        .accessibilityValue(timeLabel(value))
+        .accessibilityAdjustableAction { direction in seek(min(total, max(0, value + (direction == .increment ? 15 : -15)))) }
+    }
 }
