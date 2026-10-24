@@ -20,8 +20,23 @@ struct LibraryView: View {
     var openPocket: () -> Void
     @Environment(LibraryStore.self) private var library
     @Environment(ProcessingController.self) private var processor
+    @Environment(PocketDeviceController.self) private var pocket
     @State private var query = ""
     @State private var pendingDelete: Recording?
+    @State private var asking = false
+
+    /// Recordings grouped by calendar day, newest first.
+    private var days: [(day: Date, items: [Recording])] {
+        Dictionary(grouping: visible) { Calendar.current.startOfDay(for: $0.createdAt) }
+            .map { ($0.key, $0.value.sorted { $0.createdAt > $1.createdAt }) }
+            .sorted { $0.day > $1.day }
+    }
+
+    private func dayTitle(_ day: Date) -> String {
+        if Calendar.current.isDateInToday(day) { return "Today" }
+        if Calendar.current.isDateInYesterday(day) { return "Yesterday" }
+        return day.formatted(.dateTime.weekday(.abbreviated).month(.abbreviated).day())
+    }
 
     private var visible: [Recording] {
         library.recordings.filter { item in
@@ -32,6 +47,9 @@ struct LibraryView: View {
     var body: some View {
         NavigationStack {
             List {
+                if let saved = pocket.rememberedDevice, query.isEmpty {
+                    Section { PocketStatusCard(name: saved.name, openPocket: openPocket) }
+                }
                 if visible.isEmpty {
                     ContentUnavailableView {
                         Label(query.isEmpty ? "No recordings yet" : "No recordings found", systemImage: query.isEmpty ? "waveform" : "magnifyingglass")
@@ -47,16 +65,30 @@ struct LibraryView: View {
                         }
                     }.listRowBackground(Color.clear)
                 } else {
-                    Section {
-                        ForEach(visible) { item in
-                            NavigationLink(value: item.id) { RecordingRow(item: item, processing: processor.active.contains(item.id)) }
-                                .swipeActions(edge: .trailing) { Button("Delete", role: .destructive) { pendingDelete = item } }
+                    ForEach(days, id: \.day) { group in
+                        Section(dayTitle(group.day)) {
+                            ForEach(group.items) { item in
+                                NavigationLink(value: item.id) { RecordingRow(item: item, processing: processor.active.contains(item.id), showsDate: false) }
+                                    .swipeActions(edge: .trailing) { Button("Delete", role: .destructive) { pendingDelete = item } }
+                                    .swipeActions(edge: .leading) {
+                                        if item.status == "failed" { Button("Retry", systemImage: "arrow.clockwise") { processor.process(item.id) }.tint(.indigo) }
+                                    }
+                            }
                         }
                     }
                 }
             }
             .navigationTitle("Recordings")
-            .searchable(text: $query, prompt: "Titles, transcripts, folders")
+            .toolbar {
+                ToolbarItemGroup(placement: .topBarTrailing) {
+                    NavigationLink { PeopleView() } label: { Label("People", systemImage: "person.2") }
+                    if AIConfiguration.canMakeNotes && !library.recordings.isEmpty {
+                        Button { asking = true } label: { Label("Ask all recordings", systemImage: "sparkles") }
+                    }
+                }
+            }
+            .sheet(isPresented: $asking) { AskLibraryView() }
+            .searchable(text: $query, prompt: "Titles, transcripts, people")
             .navigationDestination(for: UUID.self) { RecordingDetailView(id: $0) }
             .confirmationDialog("Delete \(pendingDelete?.title ?? "recording")?", isPresented: Binding(get: { pendingDelete != nil }, set: { if !$0 { pendingDelete = nil } }), titleVisibility: .visible) {
                 Button("Delete from iPhone", role: .destructive) {
@@ -73,6 +105,7 @@ struct LibraryView: View {
 struct RecordingRow: View {
     let item: Recording
     var processing: Bool
+    var showsDate = true
     var body: some View {
         HStack(spacing: 12) {
             VStack(alignment: .leading, spacing: 4) {
@@ -80,7 +113,7 @@ struct RecordingRow: View {
                 if !item.summary.isEmpty {
                     Text(item.summary).font(.subheadline).foregroundStyle(.secondary).lineLimit(2)
                 }
-                Text(item.listMetadata).font(.caption).monospacedDigit().foregroundStyle(.tertiary)
+                Text(showsDate ? item.listMetadata : item.timeMetadata).font(.caption).monospacedDigit().foregroundStyle(.tertiary)
             }
             Spacer(minLength: 0)
             if processing { ProgressView().accessibilityLabel("Processing") }
@@ -96,6 +129,11 @@ extension Recording {
             ? createdAt.formatted(date: .omitted, time: .shortened)
             : createdAt.formatted(.dateTime.month(.abbreviated).day().hour().minute())
         return [date, timeLabel(duration), folder].filter { !$0.isEmpty }.joined(separator: " · ")
+    }
+
+    /// Start time, length and folder, for rows under a day heading.
+    var timeMetadata: String {
+        [createdAt.formatted(date: .omitted, time: .shortened), timeLabel(duration), folder].filter { !$0.isEmpty }.joined(separator: " · ")
     }
 }
 
@@ -165,8 +203,8 @@ struct RecordingDetailView: View {
                             Button("Export Markdown", systemImage: "doc.text") { export(item) }
                             if !item.segments.isEmpty && AIConfiguration.canMakeNotes {
                                 Menu("Make notes again", systemImage: "arrow.clockwise") {
-                                    ForEach([("Meeting", "meeting"), ("Lecture", "lecture"), ("Journal", "journal"), ("General", "general")], id: \.1) { name, tag in
-                                        Button(name) { template = tag; regenerate(item) }
+                                    ForEach(NotesTemplates.all, id: \.key) { style in
+                                        Button(style.name) { template = NotesTemplates.value(for: style.key); regenerate(item) }
                                     }
                                 }.disabled(generating)
                             }
@@ -334,6 +372,14 @@ struct RecordingDetailView: View {
                     header {
                         Menu {
                             Button("Rename speaker", systemImage: "pencil") { editSpeaker = segment.speaker; speakerName = item.speakerName(segment.speaker) }
+                            let known = library.people.map(\.name).filter { $0 != item.speakerName(segment.speaker) }
+                            if !known.isEmpty {
+                                Menu("Name as", systemImage: "person.2") {
+                                    ForEach(known, id: \.self) { name in
+                                        Button(name) { change { try library.update(id) { $0.speakerNames[segment.speaker] = name } } }
+                                    }
+                                }
+                            }
                             Button("This is my voice", systemImage: "person.crop.circle.badge.checkmark") { enrollingSpeaker = segment.speaker }.disabled(voice.working)
                             if let match = item.voiceMatches?[segment.speaker], !match.rejected {
                                 Button(match.confirmed ? "Review voice match" : "Review possible match") { reviewingVoice = segment.speaker }

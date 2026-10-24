@@ -5,7 +5,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
-	<string>PocketBridge</string>
+	<string>OpenPocket</string>
 	<key>PocketBridgeDirectAI</key>
 	<true/>
 	<key>CFBundleExecutable</key>

@@ -14,13 +14,20 @@ recorder this app works with.
 - Pair once. The app saves the pairing key in Keychain and reconnects to the
   recorder on launch and after a dropped link.
 - Bluetooth sync, and fast Wi-Fi sync through the recorder's own network.
-- Optional sync when a recording stops on the recorder.
+  Wi-Fi falls back to Bluetooth when the recorder battery is 10% or lower.
+- Auto sync: new recordings download when the recorder connects or a
+  recording stops.
+- Live transcript while the recorder records, from its live audio stream.
 - Transcription with speaker labels, AI notes, action items and a short title.
-- Ask questions about a recording.
+  Built-in and custom note styles.
+- Ask questions about one recording or across all recordings.
+- People: name speakers once, see their recordings, rename or merge names.
 - On-device voice profile that suggests which speaker is you.
 - Notifications when a recording is processed and when the recorder battery
   is low.
-- Search, folders, bookmarks, playback speed, Markdown export.
+- Recordings grouped by day, search, folders, bookmarks, playback speed,
+  Markdown export.
+- Experimental: start and stop a recording from the phone.
 
 ## Requirements
 
@@ -86,3 +93,8 @@ follow the onboarding.
 Protocol details come from [pocket-libre](https://github.com/shahcolate/pocket-libre).
 Speaker matching uses an ECAPA-TDNN Core ML model; see
 `ios/PocketBridge/ThirdPartyNotices.txt`.
+
+## License
+
+[PolyForm Noncommercial 1.0.0](LICENSE.md). You may use, change and share this
+code for any noncommercial purpose. Commercial use needs separate permission.

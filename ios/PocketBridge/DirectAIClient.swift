@@ -108,9 +108,12 @@ struct DirectAIClient: Sendable {
 
     func summarize(_ segments: [TranscriptSegment], template: String) async throws -> NotesResponse {
         guard !segments.isEmpty else { throw DirectAIError.emptyTranscript }
-        guard ["meeting", "lecture", "journal", "general"].contains(template) else {
+        let instruction = template.hasPrefix("custom:") ? String(template.dropFirst(7)).trimmingCharacters(in: .whitespacesAndNewlines) : ""
+        guard ["meeting", "lecture", "journal", "general"].contains(template) || (1...2_000).contains(instruction.count) else {
             throw DirectAIError.invalidTemplate
         }
+        // A custom style is the user's own instruction for the summary, not transcript data.
+        let style = instruction.isEmpty ? "Template: \(template)" : "Summary style from the user: \(instruction)"
         _ = try Self.validateSegments(segments, maximumBytes: Self.maxSummaryTranscriptBytes)
         let chunks = try Self.segmentChunks(segments)
         let speakers = Set(segments.map(\.speaker))
@@ -119,7 +122,7 @@ struct DirectAIClient: Sendable {
         if chunks.count == 1 {
             content = try await completion(
                 system: Self.summarySystemPrompt,
-                user: "Template: \(template)\nTranscript JSON: \(try Self.jsonText(chunks[0]))"
+                user: "\(style)\nTranscript JSON: \(try Self.jsonText(chunks[0]))"
             )
         } else {
             var notes: [String] = []
@@ -135,7 +138,7 @@ struct DirectAIClient: Sendable {
             let reducedNotes = try await reduceNotes(notes)
             content = try await completion(
                 system: Self.finalSummarySystemPrompt,
-                user: "Template: \(template)\nTranscript notes JSON: \(try Self.jsonText(reducedNotes))"
+                user: "\(style)\nTranscript notes JSON: \(try Self.jsonText(reducedNotes))"
             )
         }
         return try Self.parseNotes(content, speakers: speakers)

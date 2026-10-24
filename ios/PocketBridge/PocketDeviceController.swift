@@ -32,6 +32,11 @@ final class PocketDeviceController: NSObject, @preconcurrency CBCentralManagerDe
     private(set) var completedFiles = 0
     private(set) var totalFiles = 0
     private(set) var recordingOnDevice = false
+    private(set) var storageFreeMB: Int?
+    private(set) var storageTotalMB: Int?
+    private(set) var live: LiveTranscriber?
+    /// Recordings listed on Pocket that are not on this iPhone yet.
+    var newOnPocket: Int { files.filter { !imported($0) }.count }
     var error: String?
     var autoSync = UserDefaults.standard.bool(forKey: "pocket.autoSync") {
         didSet { UserDefaults.standard.set(autoSync, forKey: "pocket.autoSync") }
@@ -76,7 +81,7 @@ final class PocketDeviceController: NSObject, @preconcurrency CBCentralManagerDe
     private var setupStep = "Connecting to Pocket"
     private(set) var connectionLog: [String] = []
     var connectionReport: String {
-        (["PocketBridge connection report", "No pairing keys, Wi-Fi passwords or audio are included."] + connectionLog).joined(separator: "\n")
+        (["OpenPocket connection report", "No pairing keys, Wi-Fi passwords or audio are included."] + connectionLog).joined(separator: "\n")
     }
     private var wifiSSID: String?
     private var wifiRaised = false
@@ -325,10 +330,46 @@ final class PocketDeviceController: NSObject, @preconcurrency CBCentralManagerDe
     }
 
     private func readDeviceInfo(sessionID: UUID) async {
-        for type in ["BAT", "FW", "WF"] {
+        for (command, reply) in [("BAT", "BAT"), ("FW", "FW"), ("WF", "WF"), ("SPACE", "SPA")] {
             guard connectionID == sessionID, !Task.isCancelled, connected else { return }
-            _ = try? await request(type, type: type)
+            _ = try? await request(command, type: reply)
         }
+        afterConnect()
+    }
+
+    /// Lists recordings after each connection so new ones are counted, and syncs them when auto sync is on.
+    private func afterConnect() {
+        Task {
+            while setupBusy { try? await Task.sleep(for: .milliseconds(200)) }
+            syncNewRecordings()
+        }
+    }
+
+    private func syncNewRecordings() {
+        guard authenticated, !busy, !recordingOnDevice else { return }
+        run {
+            try await self.loadFiles()
+            guard self.autoSync else { self.status = "Connected"; return }
+            let pending = self.files.filter { !self.imported($0) }
+            guard !pending.isEmpty else { self.status = "Connected"; return }
+            self.totalFiles = pending.count
+            for file in pending {
+                try await self.download(file, wifi: false)
+                self.completedFiles += 1
+            }
+            self.status = "New recordings saved to iPhone"
+        }
+    }
+
+    // Experimental: the vendor app names STA and STO, but their effect from the app is not confirmed.
+    func startRecording() { guard authenticated, !busy else { return }; try? send("STA") }
+    func stopRecording() { guard authenticated, !busy else { return }; try? send("STO") }
+
+    private func startLiveTranscript() {
+        live?.cancel()
+        live = LiveTranscriber(deepgramKey: AIConfiguration.key(AIConfiguration.deepgramAccount, bundledName: "DEEPGRAM_API_KEY"))
+        guard live != nil, let audio, !audio.isNotifying else { return }
+        peripheral?.setNotifyValue(true, for: audio)
     }
 
     private func updateBusy() { busy = setupBusy || operationBusy }
@@ -460,6 +501,7 @@ final class PocketDeviceController: NSObject, @preconcurrency CBCentralManagerDe
         operation?.cancel()
         heartbeat?.cancel(); heartbeat = nil
         batteryPoll?.cancel(); batteryPoll = nil
+        live?.cancel(); live = nil; recordingOnDevice = false
         socket?.cancel(); socket = nil
         if wifiRaised && connected { try? send("WIFIC") }
         wifiRaised = false
@@ -511,9 +553,12 @@ final class PocketDeviceController: NSObject, @preconcurrency CBCentralManagerDe
         files = listed.sorted { $0.id > $1.id }
     }
 
-    func sync(_ selected: [DeviceRecording], wifi: Bool) {
+    func sync(_ selected: [DeviceRecording], wifi requested: Bool) {
         guard !recordingOnDevice else { error = "Stop the recording on Pocket before you sync files."; return }
+        // Same rule as the vendor app: Wi-Fi transfer needs more than 10% battery.
+        let wifi = requested && (battery ?? 100) > 10
         run {
+            if requested && !wifi { self.status = "Battery is under 10%. Using Bluetooth." }
             self.totalFiles = selected.count; self.completedFiles = 0
             for file in selected {
                 try Task.checkCancellation()
@@ -857,6 +902,7 @@ final class PocketDeviceController: NSObject, @preconcurrency CBCentralManagerDe
         if let wifiSSID { NEHotspotConfigurationManager.shared.removeConfiguration(forSSID: wifiSSID) }
         socket?.cancel(); socket = nil
         connected = false; authenticated = false; receivingBLE = false; wifiRaised = false
+        live?.cancel(); live = nil; recordingOnDevice = false
         batteryLevelCharacteristic = nil
         clearBattery()
         reconnecting = sessionAccepted
@@ -944,6 +990,8 @@ final class PocketDeviceController: NSObject, @preconcurrency CBCentralManagerDe
         if let error { linkError = error; transferError = error; return }
         guard let value = characteristic.value else { return }
         if characteristic.uuid == CBUUID(string: PocketProtocol.audio) {
+            // While Pocket records, it streams the same MP3 bytes it saves.
+            if !receivingBLE, recordingOnDevice { live?.send(value); return }
             guard receivingBLE, output != nil else { return }
             do {
                 guard received <= PocketProtocol.maxFileBytes - value.count else { throw PocketError.message("The Bluetooth recording exceeds the file size limit.") }
@@ -957,26 +1005,21 @@ final class PocketDeviceController: NSObject, @preconcurrency CBCentralManagerDe
             if message.type == "SK" { trace("RX SK: \(["OK", "ERR"].contains(message.value) ? message.value : "other result")") }
             else { trace("RX reply") }
             serial += 1; history.append((serial, message)); if history.count > 20_000 { history.removeFirst(10_000) }
+            if message.type == "BAT" { trace("RX BAT fields: \(message.value)") }  // Charging field is unknown; keep raw for reports.
             if authenticated, let level = PocketProtocol.vendorBattery(message) {
                 batteryReadings.setVendor(level); trace("Battery vendor \(level)%"); updateBattery()
             }
             if message.type == "FW" { firmware = message.value }
             if message.type == "WF" { wifiFirmware = message.value }
-            if message.type == "STA" { recordingOnDevice = true }
+            if message.type == "SPA", message.fields.count == 2,
+               let free = PocketProtocol.decimal(message.fields[0]), let total = PocketProtocol.decimal(message.fields[1]) {
+                storageFreeMB = free; storageTotalMB = total
+            }
+            if message.type == "STA" { recordingOnDevice = true; startLiveTranscript() }
             if message.type == "STO" {
                 recordingOnDevice = false
-                if autoSync && !busy && authenticated {
-                    run {
-                        try await self.loadFiles()
-                        let pending = self.files.filter { !self.imported($0) }
-                        self.totalFiles = pending.count
-                        for file in pending {
-                            try await self.download(file, wifi: false)
-                            self.completedFiles += 1
-                        }
-                        self.status = "New recordings saved to iPhone"
-                    }
-                }
+                live?.finish()
+                syncNewRecordings()
             }
         }
     }

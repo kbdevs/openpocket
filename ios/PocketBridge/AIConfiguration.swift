@@ -8,9 +8,10 @@ enum AIConfiguration {
     static let usesService = false
     static var canMakeNotes: Bool { usesService || directClient().canMakeNotes }
 
-    // Keys/PocketBridgeAI.plist is copied into the app. Git ignores it.
     private static var bundled: [String: String] {
-        guard let url = Bundle.main.url(forResource: "PocketBridgeAI", withExtension: "plist", subdirectory: "Keys"),
+        // CI adds the file at the bundle root; local builds copy Keys/PocketBridgeAI.plist (gitignored).
+        guard let url = Bundle.main.url(forResource: "PocketBridgeAI", withExtension: "plist")
+                ?? Bundle.main.url(forResource: "PocketBridgeAI", withExtension: "plist", subdirectory: "Keys"),
               let data = try? Data(contentsOf: url),
               let value = try? PropertyListDecoder().decode([String: String].self, from: data) else { return [:] }
         return value

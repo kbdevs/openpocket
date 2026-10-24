@@ -70,7 +70,7 @@ struct Recording: Codable, Identifiable, Sendable {
     var hasSpeechCheckpoint: Bool { speechComplete == true || !segments.isEmpty }
 
     var searchableText: String {
-        ([title, summary, folder] + segments.map(\.text)).joined(separator: " ")
+        ([title, summary, folder] + speakerNames.values + segments.map(\.text)).joined(separator: " ")
     }
     func speakerName(_ speaker: String) -> String {
         if let name = speakerNames[speaker] { return name }

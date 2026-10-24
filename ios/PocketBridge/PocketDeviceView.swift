@@ -23,6 +23,7 @@ struct PocketDeviceView: View {
                                         Label("\(battery)%", systemImage: batteryIcon(battery)).monospacedDigit()
                                             .accessibilityLabel("Pocket battery \(battery) percent")
                                     }
+                                    if let free = pocket.storageFreeMB { Text("\(ByteCountFormatter.string(fromByteCount: Int64(free) * 1_000_000, countStyle: .file)) free") }
                                     if !pocket.firmware.isEmpty { Text("Firmware \(pocket.firmware)") }
                                 }.font(.caption).foregroundStyle(.secondary)
                                 if pocket.battery == nil {
@@ -71,11 +72,19 @@ struct PocketDeviceView: View {
                 } else if pocket.authenticated {
                     Section {
                         Picker("Transfer", selection: $wifi) { Text("Wi-Fi · Fast").tag(true); Text("Bluetooth").tag(false) }.pickerStyle(.segmented).disabled(pocket.busy)
-                        Toggle("Sync after recording stops", isOn: $pocket.autoSync).disabled(pocket.busy)
+                        Toggle("Auto sync new recordings", isOn: $pocket.autoSync).disabled(pocket.busy)
                         Button("Load recordings", systemImage: "arrow.down.circle") { selected = []; pocket.refresh() }.disabled(pocket.busy)
                         DatePicker("Only this date", selection: $date, displayedComponents: .date)
                         Button("Load this date") { selected = []; pocket.refresh(date: date) }.disabled(pocket.busy)
                     }
+                    Section {
+                        if pocket.recordingOnDevice {
+                            LiveTranscriptView(live: pocket.live)
+                            Button("Stop recording", role: .destructive) { pocket.stopRecording() }.disabled(pocket.busy)
+                        } else {
+                            Button("Start recording", systemImage: "record.circle") { pocket.startRecording() }.disabled(pocket.busy)
+                        }
+                    } footer: { Text("Experimental. Pocket may ignore these commands.") }
                     if !pocket.files.isEmpty {
                         Section {
                             Button(selected.count == pocket.files.count ? "Clear selection" : "Select new recordings") {

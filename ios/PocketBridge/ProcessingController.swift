@@ -89,7 +89,7 @@ final class ProcessingController {
             return
         }
         let transcript = current.namedSegments
-        let notes = try await client.summarize(transcript, template: "meeting")
+        let notes = try await client.summarize(transcript, template: NotesTemplates.value(for: NotesTemplates.selected))
         try Task.checkCancellation()
         try library.update(item.id) { local in
             local.status = "complete"

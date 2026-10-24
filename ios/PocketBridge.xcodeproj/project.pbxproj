@@ -20,13 +20,17 @@
 		71D0B49A1DB8474BE98AE029 /* SpeakerEmbedding.swift in Sources */ = {isa = PBXBuildFile; fileRef = E99ED083C573CA0328E5F771 /* SpeakerEmbedding.swift */; };
 		772F875636276826CA183692 /* LibraryStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A83EF039362889B7508E5D6 /* LibraryStoreTests.swift */; };
 		83699AF348480FA18FB85DD8 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C4726F0E87966775DC74917 /* ContentView.swift */; };
+		86FF0F64F7013CD488D26B3D /* NotesTemplates.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4DA1A38C05B6FA3502C3A07D /* NotesTemplates.swift */; };
+		8D0A637322C1E6C36037EADE /* LibraryFeaturesTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 612367560BA54123F2348C15 /* LibraryFeaturesTests.swift */; };
 		8F9849FBA0F0943EB8DB3283 /* PocketHandshakeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19C989BE33EAADF95A5C4188 /* PocketHandshakeTests.swift */; };
 		8FC4961606402EAF330180E2 /* PocketProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7441DFB59A1E32C152F5E9B /* PocketProtocol.swift */; };
+		8FF65429A06130551326D65A /* LibraryExtrasViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 370FD6A2CD5CB7751CB5C3FB /* LibraryExtrasViews.swift */; };
 		98486BFE231C9066C29574C2 /* AudioUploadTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5A77DD85938F8D6BCB4652D /* AudioUploadTests.swift */; };
 		993C7F426D69E7B2F80E4967 /* ProcessingController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6692FDF12A6E3CD180231F78 /* ProcessingController.swift */; };
 		A4FBFC67BBBFA8C510278040 /* DirectAIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B77D50254254706989907F7 /* DirectAIClient.swift */; };
 		B399220647A9F6A27100090B /* Notifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA9D8F4BE83CCCD99D686E38 /* Notifier.swift */; };
 		B6E0A3CD55C5CFED17D55207 /* PocketRememberedDeviceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25E8723AF9435F4421E105D9 /* PocketRememberedDeviceTests.swift */; };
+		C01F8C2EA980BB3D404AA01F /* LiveTranscriber.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7FED1A47AA49CD5BB0BE6E3 /* LiveTranscriber.swift */; };
 		C08601BC76264F5AFCD91214 /* PocketDeviceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF8BBDA8E80EE0CEE1CED786 /* PocketDeviceController.swift */; };
 		C0A041F2A425825FFD40F238 /* ThirdPartyNotices.txt in Resources */ = {isa = PBXBuildFile; fileRef = 25E6CA1CD66FB7F61D51CC19 /* ThirdPartyNotices.txt */; };
 		C96039D9EA3469CA228BDFF5 /* PocketPairingKeyStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E9471D20F0B94764E4FD67E /* PocketPairingKeyStore.swift */; };
@@ -37,6 +41,7 @@
 		DD6DAF7D01D8A33ABDECA953 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F6E3CA1E9556ECA626DE72FB /* Assets.xcassets */; };
 		E69FCEFABF947E400AB953ED /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 503E1E637B3AE94FF3C6FF7A /* SettingsView.swift */; };
 		E7742BE11D18840EDAD7F106 /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2B3C5799528505A247D2CD0 /* Models.swift */; };
+		E9D9B0FCAA5F7B1743BABE68 /* LibraryFeatures.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD5F60918B55A0591430780B /* LibraryFeatures.swift */; };
 		EC1A8FD3E3B87BD35DBEA6C0 /* VoiceProfileStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAD1DCF73F53108734B46A79 /* VoiceProfileStore.swift */; };
 		F415E42318F52D864148EDD3 /* VoiceMatchingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7AF9E6BB691F41F1333827BE /* VoiceMatchingTests.swift */; };
 		F919ECD61B319CC9D4E21BB1 /* ModelsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 59C5E11E11822F3616A3B4D4 /* ModelsTests.swift */; };
@@ -65,10 +70,13 @@
 		25E8723AF9435F4421E105D9 /* PocketRememberedDeviceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PocketRememberedDeviceTests.swift; sourceTree = "<group>"; };
 		2A83EF039362889B7508E5D6 /* LibraryStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryStoreTests.swift; sourceTree = "<group>"; };
 		2B77D50254254706989907F7 /* DirectAIClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DirectAIClient.swift; sourceTree = "<group>"; };
+		370FD6A2CD5CB7751CB5C3FB /* LibraryExtrasViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryExtrasViews.swift; sourceTree = "<group>"; };
 		379D68FB24E58CBDD2804E4A /* SpeakerEmbeddingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeakerEmbeddingTests.swift; sourceTree = "<group>"; };
 		46E69239249242688763CFB9 /* Keys */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Keys; path = PocketBridge/Keys; sourceTree = SOURCE_ROOT; };
+		4DA1A38C05B6FA3502C3A07D /* NotesTemplates.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotesTemplates.swift; sourceTree = "<group>"; };
 		503E1E637B3AE94FF3C6FF7A /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		59C5E11E11822F3616A3B4D4 /* ModelsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModelsTests.swift; sourceTree = "<group>"; };
+		612367560BA54123F2348C15 /* LibraryFeaturesTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryFeaturesTests.swift; sourceTree = "<group>"; };
 		6692FDF12A6E3CD180231F78 /* ProcessingController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProcessingController.swift; sourceTree = "<group>"; };
 		66F6CCE207000DE237BCD2D1 /* LibraryStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryStore.swift; sourceTree = "<group>"; };
 		6B7067D8D3F8E3C28B744B06 /* PocketBridgeTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = PocketBridgeTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -78,9 +86,11 @@
 		9F4AAD7BEBE3791BDE0599D4 /* PocketDeviceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PocketDeviceView.swift; sourceTree = "<group>"; };
 		A2B3C5799528505A247D2CD0 /* Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models.swift; sourceTree = "<group>"; };
 		AAD1DCF73F53108734B46A79 /* VoiceProfileStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoiceProfileStore.swift; sourceTree = "<group>"; };
+		AD5F60918B55A0591430780B /* LibraryFeatures.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryFeatures.swift; sourceTree = "<group>"; };
 		B7441DFB59A1E32C152F5E9B /* PocketProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PocketProtocol.swift; sourceTree = "<group>"; };
 		DA4940A6BFD23E23EE3EE31E /* PocketHandshake.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PocketHandshake.swift; sourceTree = "<group>"; };
 		DA9D8F4BE83CCCD99D686E38 /* Notifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Notifier.swift; sourceTree = "<group>"; };
+		E7FED1A47AA49CD5BB0BE6E3 /* LiveTranscriber.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveTranscriber.swift; sourceTree = "<group>"; };
 		E99ED083C573CA0328E5F771 /* SpeakerEmbedding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeakerEmbedding.swift; sourceTree = "<group>"; };
 		EDB5647C6CB9CDB659D966E4 /* BackendClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackendClient.swift; sourceTree = "<group>"; };
 		EDE0762C7D63EC820F08DEBF /* VoiceModel */ = {isa = PBXFileReference; lastKnownFileType = folder; name = VoiceModel; path = PocketBridge/VoiceModel; sourceTree = SOURCE_ROOT; };
@@ -110,8 +120,12 @@
 				8C4726F0E87966775DC74917 /* ContentView.swift */,
 				2B77D50254254706989907F7 /* DirectAIClient.swift */,
 				46E69239249242688763CFB9 /* Keys */,
+				370FD6A2CD5CB7751CB5C3FB /* LibraryExtrasViews.swift */,
+				AD5F60918B55A0591430780B /* LibraryFeatures.swift */,
 				66F6CCE207000DE237BCD2D1 /* LibraryStore.swift */,
+				E7FED1A47AA49CD5BB0BE6E3 /* LiveTranscriber.swift */,
 				A2B3C5799528505A247D2CD0 /* Models.swift */,
+				4DA1A38C05B6FA3502C3A07D /* NotesTemplates.swift */,
 				DA9D8F4BE83CCCD99D686E38 /* Notifier.swift */,
 				1C72CD1DC753ADDAE1BF8D03 /* OnboardingView.swift */,
 				1F57D2F026DF36BDF9F8C785 /* PocketBridgeApp.swift */,
@@ -144,6 +158,7 @@
 			children = (
 				F5A77DD85938F8D6BCB4652D /* AudioUploadTests.swift */,
 				03D0B309A623C1A57D1F4877 /* DirectAIClientTests.swift */,
+				612367560BA54123F2348C15 /* LibraryFeaturesTests.swift */,
 				2A83EF039362889B7508E5D6 /* LibraryStoreTests.swift */,
 				59C5E11E11822F3616A3B4D4 /* ModelsTests.swift */,
 				19C989BE33EAADF95A5C4188 /* PocketHandshakeTests.swift */,
@@ -250,8 +265,12 @@
 				5D18EA4B6AC96CC8A1A92793 /* BackendClient.swift in Sources */,
 				83699AF348480FA18FB85DD8 /* ContentView.swift in Sources */,
 				A4FBFC67BBBFA8C510278040 /* DirectAIClient.swift in Sources */,
+				8FF65429A06130551326D65A /* LibraryExtrasViews.swift in Sources */,
+				E9D9B0FCAA5F7B1743BABE68 /* LibraryFeatures.swift in Sources */,
 				CE76A6DB60832D3003738FF7 /* LibraryStore.swift in Sources */,
+				C01F8C2EA980BB3D404AA01F /* LiveTranscriber.swift in Sources */,
 				E7742BE11D18840EDAD7F106 /* Models.swift in Sources */,
+				86FF0F64F7013CD488D26B3D /* NotesTemplates.swift in Sources */,
 				B399220647A9F6A27100090B /* Notifier.swift in Sources */,
 				15DE4DC446C5E05DCBD383C6 /* OnboardingView.swift in Sources */,
 				0165937AEA531207D2A13BE8 /* PocketBridgeApp.swift in Sources */,
@@ -273,6 +292,7 @@
 			files = (
 				98486BFE231C9066C29574C2 /* AudioUploadTests.swift in Sources */,
 				6DC0A55496CCBC495588C294 /* DirectAIClientTests.swift in Sources */,
+				8D0A637322C1E6C36037EADE /* LibraryFeaturesTests.swift in Sources */,
 				772F875636276826CA183692 /* LibraryStoreTests.swift in Sources */,
 				F919ECD61B319CC9D4E21BB1 /* ModelsTests.swift in Sources */,
 				8F9849FBA0F0943EB8DB3283 /* PocketHandshakeTests.swift in Sources */,

@@ -4,6 +4,8 @@ struct SettingsView: View {
     @Environment(VoiceProfileStore.self) private var voice
     @AppStorage("defaultLanguage") private var language = "en"
     @AppStorage("autoProcessImports") private var autoProcess = true
+    @AppStorage(NotesTemplates.defaultKey) private var notesStyle = "meeting"
+    @AppStorage("customTemplates") private var customTemplates: Data?  // Refreshes the style picker after edits.
     @State private var result: String?
     @State private var deletingVoice = false
 
@@ -13,6 +15,10 @@ struct SettingsView: View {
             Form {
                 Section {
                     Toggle("Auto-process recordings", isOn: $autoProcess)
+                    Picker("Note style", selection: $notesStyle) {
+                        ForEach(NotesTemplates.all, id: \.key) { Text($0.name).tag($0.key) }
+                    }
+                    NavigationLink("Custom note styles") { CustomTemplatesView() }
                     Picker("Language", selection: $language) {
                         Text("English").tag("en"); Text("Spanish").tag("es"); Text("French").tag("fr"); Text("German").tag("de"); Text("Multilingual").tag("multi")
                     }
