@@ -63,6 +63,8 @@ struct Recording: Codable, Identifiable, Sendable {
     var speakerNames: [String: String] = [:]
     var voiceMatches: [String: SpeakerVoiceMatch]?
     var voiceProfileChecked: UUID?
+    /// Last voice check result per speaker, shown so wrong or missed matches can be explained.
+    var voiceCheckNote: String?
     var bookmarks: [Double] = []
     var folder: String = ""
     var error: String?

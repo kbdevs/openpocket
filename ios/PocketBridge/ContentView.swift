@@ -212,6 +212,11 @@ struct RecordingDetailView: View {
                                     }
                                 }.disabled(generating)
                             }
+                            if voice.enabled && !item.segments.isEmpty {
+                                Section(item.voiceCheckNote.map { "Voice check\n\($0)" } ?? "Voice check") {
+                                    Button("Find my voice again", systemImage: "person.wave.2") { Task { await voice.match(id, force: true) } }
+                                }
+                            }
                             if item.backendID != nil { Button("Remove service copy", systemImage: "cloud.slash", role: .destructive) { removeRemote = true } }
                         } label: { Label("More", systemImage: "ellipsis.circle") }
                     }

@@ -55,6 +55,14 @@ final class VoiceMatchingTests: XCTestCase {
         ))
     }
 
+    func testShortPhrasesFromOneSpeakerJoinUnlessSomeoneSpeaksBetween() throws {
+        let phrases = (0..<6).map { segment("p\($0)", "Speaker 1", Double($0) * 2.2, Double($0) * 2.2 + 2) }
+        XCTAssertEqual(try VoiceWindowSelector.select(phrases, speaker: "Speaker 1", duration: 14).count, 4)
+
+        let interrupted = [segment("a", "Speaker 1", 0, 2), segment("b", "Speaker 2", 2.1, 2.4), segment("c", "Speaker 1", 2.5, 4.5)]
+        XCTAssertTrue(try VoiceWindowSelector.select(interrupted, speaker: "Speaker 1", duration: 5).isEmpty)
+    }
+
     func testOlderRecordingsDecodeVoiceMetadataAsNilAndManualNamesWin() throws {
         var old = Recording(
             title: "Older Pocket recording",

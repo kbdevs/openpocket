@@ -28,8 +28,18 @@ enum VoiceWindowSelector {
         }
 
         let others = segments.filter { $0.speaker != speaker }
-        let selected = segments.filter { $0.speaker == speaker }.sorted {
+        let sorted = segments.filter { $0.speaker == speaker }.sorted {
             $0.start == $1.start ? $0.end < $1.end : $0.start < $1.start
+        }
+        // Transcripts split speech into short phrases. Join phrases with a short pause and nobody else talking between them.
+        var selected: [(start: Double, end: Double)] = []
+        for segment in sorted {
+            if let last = selected.last, segment.start - last.end <= 1.0,
+               !others.contains(where: { $0.start < segment.start && last.end < $0.end }) {
+                selected[selected.count - 1].end = max(last.end, segment.end)
+            } else {
+                selected.append((segment.start, segment.end))
+            }
         }
         var windows: [VoiceAudioWindow] = []
         for segment in selected {
@@ -62,7 +72,7 @@ enum VoiceMatchPolicy {
     static let threshold = 0.55
     /// A unique match at or above this is tagged as you without review.
     static let autoConfirmThreshold = 0.65
-    static let version = 2
+    static let version = 3
     static let ambiguityMargin = 0.05
     static let minimumWindows = 3
 
@@ -310,13 +320,13 @@ final class VoiceProfileStore {
         try library.update(recordingID) { $0.voiceMatches?[speaker] = match }
     }
 
-    func match(_ id: UUID) async {
+    func match(_ id: UUID, force: Bool = false) async {
         guard enabled, let profile, matchTasks[id] == nil else { return }
         let ticket = generation
         let task = Task { [weak self] in
             guard let self else { return }
             do {
-                try await self.performMatch(recordingID: id, profile: profile, generation: ticket, force: false)
+                try await self.performMatch(recordingID: id, profile: profile, generation: ticket, force: force)
                 if self.generation == ticket { self.error = nil }
             } catch is CancellationError {
                 return
@@ -447,17 +457,19 @@ final class VoiceProfileStore {
         let speakers = Array(Set(segments.map(\.speaker).filter { !$0.isEmpty })).sorted()
         var candidates: [VoiceMatchCandidate] = []
         var means: [String: [Float]] = [:]
+        var notes: [String] = []
         for speaker in speakers {
             try Task.checkCancellation()
             guard canApply(ticket, profileID: candidateProfile.id, recordingID: recordingID, audioFile: audioFile, fingerprint: fingerprint, segments: segments) else {
                 throw CancellationError()
             }
             let windows = try VoiceWindowSelector.select(segments, speaker: speaker, duration: duration)
-            guard windows.count >= VoiceMatchPolicy.minimumWindows else { continue }
+            guard windows.count >= VoiceMatchPolicy.minimumWindows else { notes.append("\(recording.speakerName(speaker)): too little clear speech"); continue }
             let vectors = try await embeddings(windows, audioURL: audioURL, generation: ticket)
             guard let scores = VoiceMatchPolicy.cosineScores(vectors, against: candidateProfile.vector) else {
                 throw SpeakerEmbeddingError.invalidEmbedding
             }
+            notes.append("\(recording.speakerName(speaker)): \(Int(((VoiceMatchPolicy.median(scores) ?? 0) * 100).rounded()))% (\(scores.count) clips)")
             guard let similarity = VoiceMatchPolicy.suggestionScore(scores) else { continue }
             candidates.append(VoiceMatchCandidate(speaker: speaker, similarity: similarity))
             means[speaker] = VoiceMatchPolicy.normalizedAverage(vectors)
@@ -466,7 +478,9 @@ final class VoiceProfileStore {
         guard canApply(ticket, profileID: candidateProfile.id, recordingID: recordingID, audioFile: audioFile, fingerprint: fingerprint, segments: segments) else {
             throw CancellationError()
         }
-        let winner = VoiceMatchPolicy.uniqueSuggestion(candidates)
+        // When two speakers score close (often one person split in two), suggest the best one but do not tag it automatically.
+        let unique = VoiceMatchPolicy.uniqueSuggestion(candidates)
+        let winner = unique ?? candidates.max { $0.similarity < $1.similarity }
         var autoConfirmed = false
         try library.update(recordingID) { local in
             guard local.audioFile == audioFile, local.segments == segments else { return }
@@ -478,7 +492,7 @@ final class VoiceProfileStore {
                 let confirmedSpeaker = matches.first { $0.value.confirmed && !$0.value.rejected }?.key
                 if confirmedSpeaker == nil || confirmedSpeaker == winner.speaker {
                     if matches[winner.speaker] == nil {
-                        let strong = confirmedSpeaker == nil && winner.similarity >= VoiceMatchPolicy.autoConfirmThreshold
+                        let strong = unique != nil && confirmedSpeaker == nil && winner.similarity >= VoiceMatchPolicy.autoConfirmThreshold
                         matches[winner.speaker] = SpeakerVoiceMatch(profileID: candidateProfile.id, similarity: winner.similarity, confirmed: strong)
                         autoConfirmed = strong
                     }
@@ -486,6 +500,7 @@ final class VoiceProfileStore {
             }
             local.voiceMatches = matches.isEmpty ? nil : matches
             local.voiceProfileChecked = candidateProfile.id
+            local.voiceCheckNote = notes.isEmpty ? "No speakers to check" : notes.joined(separator: "\n")
         }
         if autoConfirmed, let winner, let mean = means[winner.speaker] { learn(mean) }
     }
