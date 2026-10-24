@@ -30,9 +30,9 @@ struct PocketStatusCard: View {
         if pocket.recordingOnDevice { LiveTranscriptView(live: pocket.live) }
         if pocket.authenticated {
             if pocket.recordingOnDevice {
-                Button("Stop recording", systemImage: "stop.circle.fill", role: .destructive) { pocket.stopRecording() }.disabled(pocket.busy)
+                Button("Stop recording", systemImage: "stop.circle.fill") { pocket.stopRecording() }.disabled(pocket.busy).foregroundStyle(.red)
             } else {
-                Button("Start recording", systemImage: "record.circle") { pocket.startRecording() }.disabled(pocket.busy).tint(.red)
+                Button("Start recording", systemImage: "record.circle") { pocket.startRecording() }.disabled(pocket.busy).foregroundStyle(.red)
             }
         }
     }
