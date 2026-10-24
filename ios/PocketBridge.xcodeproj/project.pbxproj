@@ -1,0 +1,533 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		0165937AEA531207D2A13BE8 /* PocketBridgeApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F57D2F026DF36BDF9F8C785 /* PocketBridgeApp.swift */; };
+		15DE4DC446C5E05DCBD383C6 /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C72CD1DC753ADDAE1BF8D03 /* OnboardingView.swift */; };
+		315533BD1C759D31C757B1A2 /* Keys in Resources */ = {isa = PBXBuildFile; fileRef = 46E69239249242688763CFB9 /* Keys */; };
+		3962792A9B2ED962B604A8C1 /* VoiceModel in Resources */ = {isa = PBXBuildFile; fileRef = EDE0762C7D63EC820F08DEBF /* VoiceModel */; };
+		4E356A29449F0622076C1BB6 /* PocketProtocolTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 236D7D62D047A266AE993450 /* PocketProtocolTests.swift */; };
+		52029532567C6ABBBD3FC078 /* SpeakerEmbeddingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 379D68FB24E58CBDD2804E4A /* SpeakerEmbeddingTests.swift */; };
+		5608C47837845B342E1414A3 /* PocketDeviceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F4AAD7BEBE3791BDE0599D4 /* PocketDeviceView.swift */; };
+		5AC5E80ED266DDF445E4F3CA /* AudioController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25B34F312D71F0A467F821F2 /* AudioController.swift */; };
+		5D18EA4B6AC96CC8A1A92793 /* BackendClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDB5647C6CB9CDB659D966E4 /* BackendClient.swift */; };
+		6DC0A55496CCBC495588C294 /* DirectAIClientTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03D0B309A623C1A57D1F4877 /* DirectAIClientTests.swift */; };
+		71D0B49A1DB8474BE98AE029 /* SpeakerEmbedding.swift in Sources */ = {isa = PBXBuildFile; fileRef = E99ED083C573CA0328E5F771 /* SpeakerEmbedding.swift */; };
+		772F875636276826CA183692 /* LibraryStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A83EF039362889B7508E5D6 /* LibraryStoreTests.swift */; };
+		83699AF348480FA18FB85DD8 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C4726F0E87966775DC74917 /* ContentView.swift */; };
+		8F9849FBA0F0943EB8DB3283 /* PocketHandshakeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19C989BE33EAADF95A5C4188 /* PocketHandshakeTests.swift */; };
+		8FC4961606402EAF330180E2 /* PocketProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7441DFB59A1E32C152F5E9B /* PocketProtocol.swift */; };
+		98486BFE231C9066C29574C2 /* AudioUploadTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5A77DD85938F8D6BCB4652D /* AudioUploadTests.swift */; };
+		993C7F426D69E7B2F80E4967 /* ProcessingController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6692FDF12A6E3CD180231F78 /* ProcessingController.swift */; };
+		A4FBFC67BBBFA8C510278040 /* DirectAIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B77D50254254706989907F7 /* DirectAIClient.swift */; };
+		B399220647A9F6A27100090B /* Notifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA9D8F4BE83CCCD99D686E38 /* Notifier.swift */; };
+		B6E0A3CD55C5CFED17D55207 /* PocketRememberedDeviceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25E8723AF9435F4421E105D9 /* PocketRememberedDeviceTests.swift */; };
+		C08601BC76264F5AFCD91214 /* PocketDeviceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF8BBDA8E80EE0CEE1CED786 /* PocketDeviceController.swift */; };
+		C0A041F2A425825FFD40F238 /* ThirdPartyNotices.txt in Resources */ = {isa = PBXBuildFile; fileRef = 25E6CA1CD66FB7F61D51CC19 /* ThirdPartyNotices.txt */; };
+		C96039D9EA3469CA228BDFF5 /* PocketPairingKeyStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E9471D20F0B94764E4FD67E /* PocketPairingKeyStore.swift */; };
+		CE76A6DB60832D3003738FF7 /* LibraryStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66F6CCE207000DE237BCD2D1 /* LibraryStore.swift */; };
+		CF75FC40CF9C20B2A54B9071 /* AIConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = F52C5426EA34E53BD1C37116 /* AIConfiguration.swift */; };
+		CFE32E24185998E481DC26CE /* PocketHandshake.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA4940A6BFD23E23EE3EE31E /* PocketHandshake.swift */; };
+		D51DBA9998894BBA61C26671 /* ProcessingControllerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C516A62FD4A4CDF28A56201 /* ProcessingControllerTests.swift */; };
+		DD6DAF7D01D8A33ABDECA953 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F6E3CA1E9556ECA626DE72FB /* Assets.xcassets */; };
+		E69FCEFABF947E400AB953ED /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 503E1E637B3AE94FF3C6FF7A /* SettingsView.swift */; };
+		E7742BE11D18840EDAD7F106 /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2B3C5799528505A247D2CD0 /* Models.swift */; };
+		EC1A8FD3E3B87BD35DBEA6C0 /* VoiceProfileStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAD1DCF73F53108734B46A79 /* VoiceProfileStore.swift */; };
+		F415E42318F52D864148EDD3 /* VoiceMatchingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7AF9E6BB691F41F1333827BE /* VoiceMatchingTests.swift */; };
+		F919ECD61B319CC9D4E21BB1 /* ModelsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 59C5E11E11822F3616A3B4D4 /* ModelsTests.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		79C93A46D23AE0A5C1C5082A /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = C6D21CA4A54D9255AC8A2D8E /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 46E40F81D58B173A81DB1A1C;
+			remoteInfo = PocketBridge;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		03D0B309A623C1A57D1F4877 /* DirectAIClientTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DirectAIClientTests.swift; sourceTree = "<group>"; };
+		0E9471D20F0B94764E4FD67E /* PocketPairingKeyStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PocketPairingKeyStore.swift; sourceTree = "<group>"; };
+		136AC03A85A5576AC89C50A4 /* PocketBridge.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = PocketBridge.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		19C989BE33EAADF95A5C4188 /* PocketHandshakeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PocketHandshakeTests.swift; sourceTree = "<group>"; };
+		1C72CD1DC753ADDAE1BF8D03 /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
+		1F57D2F026DF36BDF9F8C785 /* PocketBridgeApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PocketBridgeApp.swift; sourceTree = "<group>"; };
+		236D7D62D047A266AE993450 /* PocketProtocolTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PocketProtocolTests.swift; sourceTree = "<group>"; };
+		25B34F312D71F0A467F821F2 /* AudioController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioController.swift; sourceTree = "<group>"; };
+		25E6CA1CD66FB7F61D51CC19 /* ThirdPartyNotices.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = ThirdPartyNotices.txt; sourceTree = "<group>"; };
+		25E8723AF9435F4421E105D9 /* PocketRememberedDeviceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PocketRememberedDeviceTests.swift; sourceTree = "<group>"; };
+		2A83EF039362889B7508E5D6 /* LibraryStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryStoreTests.swift; sourceTree = "<group>"; };
+		2B77D50254254706989907F7 /* DirectAIClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DirectAIClient.swift; sourceTree = "<group>"; };
+		379D68FB24E58CBDD2804E4A /* SpeakerEmbeddingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeakerEmbeddingTests.swift; sourceTree = "<group>"; };
+		46E69239249242688763CFB9 /* Keys */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Keys; path = PocketBridge/Keys; sourceTree = SOURCE_ROOT; };
+		503E1E637B3AE94FF3C6FF7A /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		59C5E11E11822F3616A3B4D4 /* ModelsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModelsTests.swift; sourceTree = "<group>"; };
+		6692FDF12A6E3CD180231F78 /* ProcessingController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProcessingController.swift; sourceTree = "<group>"; };
+		66F6CCE207000DE237BCD2D1 /* LibraryStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryStore.swift; sourceTree = "<group>"; };
+		6B7067D8D3F8E3C28B744B06 /* PocketBridgeTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = PocketBridgeTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		6C516A62FD4A4CDF28A56201 /* ProcessingControllerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProcessingControllerTests.swift; sourceTree = "<group>"; };
+		7AF9E6BB691F41F1333827BE /* VoiceMatchingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoiceMatchingTests.swift; sourceTree = "<group>"; };
+		8C4726F0E87966775DC74917 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		9F4AAD7BEBE3791BDE0599D4 /* PocketDeviceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PocketDeviceView.swift; sourceTree = "<group>"; };
+		A2B3C5799528505A247D2CD0 /* Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models.swift; sourceTree = "<group>"; };
+		AAD1DCF73F53108734B46A79 /* VoiceProfileStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoiceProfileStore.swift; sourceTree = "<group>"; };
+		B7441DFB59A1E32C152F5E9B /* PocketProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PocketProtocol.swift; sourceTree = "<group>"; };
+		DA4940A6BFD23E23EE3EE31E /* PocketHandshake.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PocketHandshake.swift; sourceTree = "<group>"; };
+		DA9D8F4BE83CCCD99D686E38 /* Notifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Notifier.swift; sourceTree = "<group>"; };
+		E99ED083C573CA0328E5F771 /* SpeakerEmbedding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeakerEmbedding.swift; sourceTree = "<group>"; };
+		EDB5647C6CB9CDB659D966E4 /* BackendClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackendClient.swift; sourceTree = "<group>"; };
+		EDE0762C7D63EC820F08DEBF /* VoiceModel */ = {isa = PBXFileReference; lastKnownFileType = folder; name = VoiceModel; path = PocketBridge/VoiceModel; sourceTree = SOURCE_ROOT; };
+		F52C5426EA34E53BD1C37116 /* AIConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIConfiguration.swift; sourceTree = "<group>"; };
+		F5A77DD85938F8D6BCB4652D /* AudioUploadTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioUploadTests.swift; sourceTree = "<group>"; };
+		F6E3CA1E9556ECA626DE72FB /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		FF8BBDA8E80EE0CEE1CED786 /* PocketDeviceController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PocketDeviceController.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		27F6E363169F132AFB862734 = {
+			isa = PBXGroup;
+			children = (
+				737F4A8215FD9E842AB643B0 /* PocketBridge */,
+				E95515826F01A9A3B022E0B9 /* PocketBridgeTests */,
+				7A87028519C7D1A7B51D9FBE /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		737F4A8215FD9E842AB643B0 /* PocketBridge */ = {
+			isa = PBXGroup;
+			children = (
+				F52C5426EA34E53BD1C37116 /* AIConfiguration.swift */,
+				F6E3CA1E9556ECA626DE72FB /* Assets.xcassets */,
+				25B34F312D71F0A467F821F2 /* AudioController.swift */,
+				EDB5647C6CB9CDB659D966E4 /* BackendClient.swift */,
+				8C4726F0E87966775DC74917 /* ContentView.swift */,
+				2B77D50254254706989907F7 /* DirectAIClient.swift */,
+				46E69239249242688763CFB9 /* Keys */,
+				66F6CCE207000DE237BCD2D1 /* LibraryStore.swift */,
+				A2B3C5799528505A247D2CD0 /* Models.swift */,
+				DA9D8F4BE83CCCD99D686E38 /* Notifier.swift */,
+				1C72CD1DC753ADDAE1BF8D03 /* OnboardingView.swift */,
+				1F57D2F026DF36BDF9F8C785 /* PocketBridgeApp.swift */,
+				FF8BBDA8E80EE0CEE1CED786 /* PocketDeviceController.swift */,
+				9F4AAD7BEBE3791BDE0599D4 /* PocketDeviceView.swift */,
+				DA4940A6BFD23E23EE3EE31E /* PocketHandshake.swift */,
+				0E9471D20F0B94764E4FD67E /* PocketPairingKeyStore.swift */,
+				B7441DFB59A1E32C152F5E9B /* PocketProtocol.swift */,
+				6692FDF12A6E3CD180231F78 /* ProcessingController.swift */,
+				503E1E637B3AE94FF3C6FF7A /* SettingsView.swift */,
+				E99ED083C573CA0328E5F771 /* SpeakerEmbedding.swift */,
+				25E6CA1CD66FB7F61D51CC19 /* ThirdPartyNotices.txt */,
+				EDE0762C7D63EC820F08DEBF /* VoiceModel */,
+				AAD1DCF73F53108734B46A79 /* VoiceProfileStore.swift */,
+			);
+			path = PocketBridge;
+			sourceTree = "<group>";
+		};
+		7A87028519C7D1A7B51D9FBE /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				136AC03A85A5576AC89C50A4 /* PocketBridge.app */,
+				6B7067D8D3F8E3C28B744B06 /* PocketBridgeTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		E95515826F01A9A3B022E0B9 /* PocketBridgeTests */ = {
+			isa = PBXGroup;
+			children = (
+				F5A77DD85938F8D6BCB4652D /* AudioUploadTests.swift */,
+				03D0B309A623C1A57D1F4877 /* DirectAIClientTests.swift */,
+				2A83EF039362889B7508E5D6 /* LibraryStoreTests.swift */,
+				59C5E11E11822F3616A3B4D4 /* ModelsTests.swift */,
+				19C989BE33EAADF95A5C4188 /* PocketHandshakeTests.swift */,
+				236D7D62D047A266AE993450 /* PocketProtocolTests.swift */,
+				25E8723AF9435F4421E105D9 /* PocketRememberedDeviceTests.swift */,
+				6C516A62FD4A4CDF28A56201 /* ProcessingControllerTests.swift */,
+				379D68FB24E58CBDD2804E4A /* SpeakerEmbeddingTests.swift */,
+				7AF9E6BB691F41F1333827BE /* VoiceMatchingTests.swift */,
+			);
+			path = PocketBridgeTests;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		2E6D1F89A6B6D299D3FB3597 /* PocketBridgeTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 0BBA1228883AB120DB2DF93D /* Build configuration list for PBXNativeTarget "PocketBridgeTests" */;
+			buildPhases = (
+				B71685B83105188F0AAE6200 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				EB9995C3C6EACDE958EA8C08 /* PBXTargetDependency */,
+			);
+			name = PocketBridgeTests;
+			packageProductDependencies = (
+			);
+			productName = PocketBridgeTests;
+			productReference = 6B7067D8D3F8E3C28B744B06 /* PocketBridgeTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		46E40F81D58B173A81DB1A1C /* PocketBridge */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 963DF9087D1834D1F0AC6912 /* Build configuration list for PBXNativeTarget "PocketBridge" */;
+			buildPhases = (
+				8EB7DE8BAA2236014E0CF33F /* Sources */,
+				6039064DE3FE1C3AB20F4D1F /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = PocketBridge;
+			packageProductDependencies = (
+			);
+			productName = PocketBridge;
+			productReference = 136AC03A85A5576AC89C50A4 /* PocketBridge.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		C6D21CA4A54D9255AC8A2D8E /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 2660;
+				TargetAttributes = {
+				};
+			};
+			buildConfigurationList = 6FE03522DED32ACFAB3B41B9 /* Build configuration list for PBXProject "PocketBridge" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = 27F6E363169F132AFB862734;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 7A87028519C7D1A7B51D9FBE /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				46E40F81D58B173A81DB1A1C /* PocketBridge */,
+				2E6D1F89A6B6D299D3FB3597 /* PocketBridgeTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		6039064DE3FE1C3AB20F4D1F /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				DD6DAF7D01D8A33ABDECA953 /* Assets.xcassets in Resources */,
+				315533BD1C759D31C757B1A2 /* Keys in Resources */,
+				C0A041F2A425825FFD40F238 /* ThirdPartyNotices.txt in Resources */,
+				3962792A9B2ED962B604A8C1 /* VoiceModel in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		8EB7DE8BAA2236014E0CF33F /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				CF75FC40CF9C20B2A54B9071 /* AIConfiguration.swift in Sources */,
+				5AC5E80ED266DDF445E4F3CA /* AudioController.swift in Sources */,
+				5D18EA4B6AC96CC8A1A92793 /* BackendClient.swift in Sources */,
+				83699AF348480FA18FB85DD8 /* ContentView.swift in Sources */,
+				A4FBFC67BBBFA8C510278040 /* DirectAIClient.swift in Sources */,
+				CE76A6DB60832D3003738FF7 /* LibraryStore.swift in Sources */,
+				E7742BE11D18840EDAD7F106 /* Models.swift in Sources */,
+				B399220647A9F6A27100090B /* Notifier.swift in Sources */,
+				15DE4DC446C5E05DCBD383C6 /* OnboardingView.swift in Sources */,
+				0165937AEA531207D2A13BE8 /* PocketBridgeApp.swift in Sources */,
+				C08601BC76264F5AFCD91214 /* PocketDeviceController.swift in Sources */,
+				5608C47837845B342E1414A3 /* PocketDeviceView.swift in Sources */,
+				CFE32E24185998E481DC26CE /* PocketHandshake.swift in Sources */,
+				C96039D9EA3469CA228BDFF5 /* PocketPairingKeyStore.swift in Sources */,
+				8FC4961606402EAF330180E2 /* PocketProtocol.swift in Sources */,
+				993C7F426D69E7B2F80E4967 /* ProcessingController.swift in Sources */,
+				E69FCEFABF947E400AB953ED /* SettingsView.swift in Sources */,
+				71D0B49A1DB8474BE98AE029 /* SpeakerEmbedding.swift in Sources */,
+				EC1A8FD3E3B87BD35DBEA6C0 /* VoiceProfileStore.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B71685B83105188F0AAE6200 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				98486BFE231C9066C29574C2 /* AudioUploadTests.swift in Sources */,
+				6DC0A55496CCBC495588C294 /* DirectAIClientTests.swift in Sources */,
+				772F875636276826CA183692 /* LibraryStoreTests.swift in Sources */,
+				F919ECD61B319CC9D4E21BB1 /* ModelsTests.swift in Sources */,
+				8F9849FBA0F0943EB8DB3283 /* PocketHandshakeTests.swift in Sources */,
+				4E356A29449F0622076C1BB6 /* PocketProtocolTests.swift in Sources */,
+				B6E0A3CD55C5CFED17D55207 /* PocketRememberedDeviceTests.swift in Sources */,
+				D51DBA9998894BBA61C26671 /* ProcessingControllerTests.swift in Sources */,
+				52029532567C6ABBBD3FC078 /* SpeakerEmbeddingTests.swift in Sources */,
+				F415E42318F52D864148EDD3 /* VoiceMatchingTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		EB9995C3C6EACDE958EA8C08 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 46E40F81D58B173A81DB1A1C /* PocketBridge */;
+			targetProxy = 79C93A46D23AE0A5C1C5082A /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		20CC21679051F576C595232F /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				POCKETBRIDGE_URL_SCHEME = pocketbridge;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		2A73CA0D19FF4A5529D2EF02 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				POCKETBRIDGE_URL_SCHEME = pocketbridge;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		3ADA9CD1CD736BDF78F10F80 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = app.pocketbridge.ios.tests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = 1;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/PocketBridge.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/PocketBridge";
+			};
+			name = Debug;
+		};
+		41C63AF75F807D30ABC2F656 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = PocketBridge/PocketBridge.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_PREVIEWS = YES;
+				ENABLE_TESTABILITY = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = PocketBridge/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = app.pocketbridge.ios;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
+		5C00A151668CA6CD4759DB0D /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = app.pocketbridge.ios.tests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = 1;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/PocketBridge.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/PocketBridge";
+			};
+			name = Release;
+		};
+		A06C9BF24E4C271FBAD1BC88 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = PocketBridge/PocketBridge.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = PocketBridge/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = app.pocketbridge.ios;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		0BBA1228883AB120DB2DF93D /* Build configuration list for PBXNativeTarget "PocketBridgeTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				3ADA9CD1CD736BDF78F10F80 /* Debug */,
+				5C00A151668CA6CD4759DB0D /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		6FE03522DED32ACFAB3B41B9 /* Build configuration list for PBXProject "PocketBridge" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				2A73CA0D19FF4A5529D2EF02 /* Debug */,
+				20CC21679051F576C595232F /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		963DF9087D1834D1F0AC6912 /* Build configuration list for PBXNativeTarget "PocketBridge" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				41C63AF75F807D30ABC2F656 /* Debug */,
+				A06C9BF24E4C271FBAD1BC88 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = C6D21CA4A54D9255AC8A2D8E /* Project object */;
+}

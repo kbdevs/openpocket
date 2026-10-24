@@ -1,0 +1,10 @@
+.build/
+DerivedData/
+*.xcuserstate
+xcuserdata/
+backend/.venv/
+backend/data/
+__pycache__/
+.env
+artifacts/
+/ios/PocketBridge/VoiceModel/
