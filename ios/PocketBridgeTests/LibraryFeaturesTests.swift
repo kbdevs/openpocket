@@ -24,6 +24,26 @@ final class LibraryFeaturesTests: XCTestCase {
         XCTAssertEqual(library.recordings(with: "Sam").map(\.id).sorted { $0.uuidString < $1.uuidString }, [first, second].sorted { $0.uuidString < $1.uuidString })
     }
 
+    @MainActor
+    func testRestoreAddsMissingRecordingsWithAudioAndKeepsExistingOnes() throws {
+        let root = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString, isDirectory: true)
+        defer { try? FileManager.default.removeItem(at: root) }
+        let backup = root.appendingPathComponent("backup"), live = root.appendingPathComponent("live")
+        try FileManager.default.createDirectory(at: backup, withIntermediateDirectories: true)
+        let id = UUID()
+        let kept = Recording(id: id, title: "Saved", audioFile: "\(id.uuidString).mp3")
+        let noAudio = Recording(title: "No audio", audioFile: "x.mp3")
+        try JSONEncoder().encode([kept, noAudio]).write(to: backup.appendingPathComponent("library.json"))
+        try Data("audio".utf8).write(to: backup.appendingPathComponent(kept.audioFile))
+
+        let library = LibraryStore(directory: live)
+        XCTAssertEqual(try library.restore(from: backup), 1)
+        XCTAssertEqual(library.recordings.map(\.id), [id])
+        XCTAssertTrue(FileManager.default.fileExists(atPath: library.audioURL(kept).path))
+        XCTAssertEqual(try library.restore(from: backup), 0)
+        XCTAssertEqual(LibraryStore(directory: live).recordings.count, 1)
+    }
+
     func testAskContextPutsMatchingTranscriptsFirstAndStaysUnderTheLimit() {
         var pricing = Recording(title: "Pricing", audioFile: "a.wav")
         pricing.summary = "Discussed plans."

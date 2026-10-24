@@ -1,8 +1,13 @@
 import SwiftUI
+import UniformTypeIdentifiers
 
 struct SettingsView: View {
     @Environment(VoiceProfileStore.self) private var voice
     @Environment(PocketDeviceController.self) private var pocket
+    @Environment(LibraryStore.self) private var library
+    @State private var exporting = false
+    @State private var importing = false
+    @State private var restored: String?
     @AppStorage("defaultLanguage") private var language = "en"
     @AppStorage("autoProcessImports") private var autoProcess = true
     @AppStorage(NotesTemplates.defaultKey) private var notesStyle = "meeting"
@@ -35,6 +40,11 @@ struct SettingsView: View {
                         Text("English").tag("en"); Text("Spanish").tag("es"); Text("French").tag("fr"); Text("German").tag("de"); Text("Multilingual").tag("multi")
                     }
                 }
+                Section {
+                    Button("Back up to Files", systemImage: "externaldrive.badge.icloud") { exporting = true }.disabled(library.recordings.isEmpty)
+                    Button("Restore from backup", systemImage: "arrow.counterclockwise") { importing = true }
+                    if let restored { Text(restored).font(.footnote).foregroundStyle(.secondary) }
+                } header: { Text("Backup") } footer: { Text("Save a backup to iCloud Drive. Restoring adds missing recordings and keeps the ones on this iPhone.") }
                 if voice.hasProfile || voice.working || result != nil {
                 Section("My voice") {
                     if voice.hasProfile {
@@ -52,6 +62,19 @@ struct SettingsView: View {
                 }
             }
             .navigationTitle("Settings")
+            .fileExporter(isPresented: $exporting, document: LibraryBackup(folder: library.directory), contentType: .folder,
+                          defaultFilename: "OpenPocket Backup \(Date().formatted(.iso8601.year().month().day()))") { outcome in
+                if case .failure(let error) = outcome { library.error = error.localizedDescription }
+            }
+            .fileImporter(isPresented: $importing, allowedContentTypes: [.folder]) { outcome in
+                do {
+                    let folder = try outcome.get()
+                    let access = folder.startAccessingSecurityScopedResource()
+                    defer { if access { folder.stopAccessingSecurityScopedResource() } }
+                    let added = try library.restore(from: folder)
+                    restored = added == 0 ? "No new recordings in that backup." : "Restored \(added) \(added == 1 ? "recording" : "recordings")."
+                } catch { library.error = "Cannot restore that backup. \(error.localizedDescription)" }
+            }
             .confirmationDialog("Delete your voice profile?", isPresented: $deletingVoice, titleVisibility: .visible) {
                 Button("Delete voice profile", role: .destructive) {
                     do { try voice.deleteProfile() } catch { result = error.localizedDescription }
@@ -64,4 +87,13 @@ struct SettingsView: View {
         guard pocket.authenticated else { return pocket.status }
         return ([pocket.battery.map { "\($0)%" }, pocket.storageFreeMB.map { "\(ByteCountFormatter.string(fromByteCount: Int64($0) * 1_000_000, countStyle: .file)) free" }].compactMap { $0 } + ["Connected"]).joined(separator: " · ")
     }
+}
+
+/// The library folder (index and audio) as one exportable folder.
+private struct LibraryBackup: FileDocument {
+    static var readableContentTypes: [UTType] { [.folder] }
+    let folder: URL
+    init(folder: URL) { self.folder = folder }
+    init(configuration: ReadConfiguration) throws { throw CocoaError(.fileReadUnsupportedScheme) }
+    func fileWrapper(configuration: WriteConfiguration) throws -> FileWrapper { try FileWrapper(url: folder, options: .immediate) }
 }

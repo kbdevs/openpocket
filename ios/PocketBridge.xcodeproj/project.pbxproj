@@ -16,6 +16,7 @@
 		5608C47837845B342E1414A3 /* PocketDeviceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F4AAD7BEBE3791BDE0599D4 /* PocketDeviceView.swift */; };
 		5AC5E80ED266DDF445E4F3CA /* AudioController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25B34F312D71F0A467F821F2 /* AudioController.swift */; };
 		5D18EA4B6AC96CC8A1A92793 /* BackendClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDB5647C6CB9CDB659D966E4 /* BackendClient.swift */; };
+		67715B2370A79E0F572136AE /* Reminders.swift in Sources */ = {isa = PBXBuildFile; fileRef = 077F71A909E6E3D0A896C07D /* Reminders.swift */; };
 		6DC0A55496CCBC495588C294 /* DirectAIClientTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03D0B309A623C1A57D1F4877 /* DirectAIClientTests.swift */; };
 		71D0B49A1DB8474BE98AE029 /* SpeakerEmbedding.swift in Sources */ = {isa = PBXBuildFile; fileRef = E99ED083C573CA0328E5F771 /* SpeakerEmbedding.swift */; };
 		772F875636276826CA183692 /* LibraryStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A83EF039362889B7508E5D6 /* LibraryStoreTests.swift */; };
@@ -59,6 +60,7 @@
 
 /* Begin PBXFileReference section */
 		03D0B309A623C1A57D1F4877 /* DirectAIClientTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DirectAIClientTests.swift; sourceTree = "<group>"; };
+		077F71A909E6E3D0A896C07D /* Reminders.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Reminders.swift; sourceTree = "<group>"; };
 		0E9471D20F0B94764E4FD67E /* PocketPairingKeyStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PocketPairingKeyStore.swift; sourceTree = "<group>"; };
 		136AC03A85A5576AC89C50A4 /* PocketBridge.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = PocketBridge.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		19C989BE33EAADF95A5C4188 /* PocketHandshakeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PocketHandshakeTests.swift; sourceTree = "<group>"; };
@@ -135,6 +137,7 @@
 				0E9471D20F0B94764E4FD67E /* PocketPairingKeyStore.swift */,
 				B7441DFB59A1E32C152F5E9B /* PocketProtocol.swift */,
 				6692FDF12A6E3CD180231F78 /* ProcessingController.swift */,
+				077F71A909E6E3D0A896C07D /* Reminders.swift */,
 				503E1E637B3AE94FF3C6FF7A /* SettingsView.swift */,
 				E99ED083C573CA0328E5F771 /* SpeakerEmbedding.swift */,
 				25E6CA1CD66FB7F61D51CC19 /* ThirdPartyNotices.txt */,
@@ -280,6 +283,7 @@
 				C96039D9EA3469CA228BDFF5 /* PocketPairingKeyStore.swift in Sources */,
 				8FC4961606402EAF330180E2 /* PocketProtocol.swift in Sources */,
 				993C7F426D69E7B2F80E4967 /* ProcessingController.swift in Sources */,
+				67715B2370A79E0F572136AE /* Reminders.swift in Sources */,
 				E69FCEFABF947E400AB953ED /* SettingsView.swift in Sources */,
 				71D0B49A1DB8474BE98AE029 /* SpeakerEmbedding.swift in Sources */,
 				EC1A8FD3E3B87BD35DBEA6C0 /* VoiceProfileStore.swift in Sources */,

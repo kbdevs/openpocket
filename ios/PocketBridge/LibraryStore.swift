@@ -135,6 +135,24 @@ final class LibraryStore {
         // Keep metadata intact until the index write succeeds.
         try FileManager.default.removeItem(at: audioURL(item))
     }
+
+    /// Adds recordings from a backup folder (a copy of this library's folder). Recordings already here are kept as they are.
+    @discardableResult
+    func restore(from folder: URL) throws -> Int {
+        let saved = try JSONDecoder().decode([Recording].self, from: Data(contentsOf: folder.appendingPathComponent("library.json")))
+        var next = recordings
+        var added = 0
+        for item in saved where recording(item.id) == nil {
+            guard item.audioFile == URL(fileURLWithPath: item.audioFile).lastPathComponent, item.audioFile.hasPrefix(item.id.uuidString + ".") else { continue }
+            let source = folder.appendingPathComponent(item.audioFile)
+            guard FileManager.default.fileExists(atPath: source.path) else { continue }
+            if !FileManager.default.fileExists(atPath: audioURL(item).path) { try FileManager.default.copyItem(at: source, to: audioURL(item)) }
+            next.append(item)
+            added += 1
+        }
+        if added > 0 { try persist(next) }
+        return added
+    }
     // Recover files left by older builds; the app no longer records microphone audio.
     @discardableResult
     private func saveLegacyMicrophone(_ url: URL) async throws -> UUID {

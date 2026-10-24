@@ -40,6 +40,8 @@
 		<key>NSAllowsLocalNetworking</key>
 		<true/>
 	</dict>
+	<key>NSRemindersFullAccessUsageDescription</key>
+	<string>Add action items from your recordings to Reminders.</string>
 	<key>NSBluetoothAlwaysUsageDescription</key>
 	<string>Connect to your Pocket recorder over Bluetooth to sync recordings.</string>
 	<key>NSLocalNetworkUsageDescription</key>

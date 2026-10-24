@@ -67,7 +67,16 @@ struct LibraryView: View {
                     ForEach(days, id: \.day) { group in
                         Section(dayTitle(group.day)) {
                             ForEach(group.items) { item in
-                                NavigationLink(value: item.id) { RecordingRow(item: item, processing: processor.active.contains(item.id), showsDate: false) }
+                                let hit = query.isEmpty ? nil : item.segments.first { $0.text.localizedCaseInsensitiveContains(query) }
+                                NavigationLink(value: hit.map { TranscriptHit(id: item.id, start: $0.start) } ?? TranscriptHit(id: item.id, start: nil)) {
+                                    VStack(alignment: .leading, spacing: 6) {
+                                        RecordingRow(item: item, processing: processor.active.contains(item.id), showsDate: false)
+                                        if let hit {
+                                            Text("\(Text(timeLabel(hit.start)).monospacedDigit().foregroundStyle(.tertiary))  \(hit.text)").foregroundStyle(.secondary)
+                                                .font(.footnote).lineLimit(2)
+                                        }
+                                    }
+                                }
                                     .swipeActions(edge: .trailing) { Button("Delete", role: .destructive) { pendingDelete = item } }
                                     .swipeActions(edge: .leading) {
                                         if item.status == "failed" { Button("Retry", systemImage: "arrow.clockwise") { processor.process(item.id) }.tint(.indigo) }
@@ -93,6 +102,7 @@ struct LibraryView: View {
             }
             .searchable(text: $query, prompt: "Titles, transcripts, people")
             .navigationDestination(for: UUID.self) { RecordingDetailView(id: $0) }
+            .navigationDestination(for: TranscriptHit.self) { RecordingDetailView(id: $0.id, startAt: $0.start) }
             .confirmationDialog("Delete \(pendingDelete?.title ?? "recording")?", isPresented: Binding(get: { pendingDelete != nil }, set: { if !$0 { pendingDelete = nil } }), titleVisibility: .visible) {
                 Button("Delete from iPhone", role: .destructive) {
                     if let id = pendingDelete?.id { processor.cancel(id); change { try library.delete(id) } }
@@ -103,6 +113,12 @@ struct LibraryView: View {
     }
 
     private func change(_ action: () throws -> Void) { do { try action() } catch { library.error = error.localizedDescription } }
+}
+
+/// A search result: a recording, and where in its transcript the words were found.
+struct TranscriptHit: Hashable {
+    let id: UUID
+    let start: Double?
 }
 
 struct RecordingRow: View {
@@ -142,6 +158,8 @@ extension Recording {
 
 struct RecordingDetailView: View {
     let id: UUID
+    /// Opens the transcript at this time, for search results.
+    var startAt: Double?
     @Environment(LibraryStore.self) private var library
     @Environment(ProcessingController.self) private var processor
     @Environment(AudioController.self) private var audio
@@ -163,11 +181,13 @@ struct RecordingDetailView: View {
     @State private var editedText = ""
     @State private var enrollingSpeaker: String?
     @State private var reviewingVoice: String?
+    @State private var remindersAdded: Int?
     private var item: Recording? { library.recording(id) }
 
     var body: some View {
         Group {
             if let item {
+                ScrollViewReader { proxy in
                 ScrollView {
                     VStack(alignment: .leading, spacing: 24) {
                         VStack(alignment: .leading, spacing: 8) {
@@ -191,6 +211,15 @@ struct RecordingDetailView: View {
                     }.padding(20)
                 }
                 .background(Color(.systemGroupedBackground))
+                .task(id: id) {
+                    do { try audio.load(item, url: library.audioURL(item)) } catch { library.error = "Playback is not available for this file. \(error.localizedDescription)" }
+                    guard let startAt, let segment = item.segments.last(where: { $0.start <= startAt + 0.01 }) else { return }
+                    section = "Transcript"
+                    audio.seek(segment.start)
+                    try? await Task.sleep(for: .milliseconds(300))
+                    withAnimation { proxy.scrollTo(segment.id, anchor: .center) }
+                }
+                }
                 .navigationBarTitleDisplayMode(.inline)
                 .toolbar {
                     if AIConfiguration.canMakeNotes && !item.segments.isEmpty {
@@ -221,7 +250,6 @@ struct RecordingDetailView: View {
                         } label: { Label("More", systemImage: "ellipsis.circle") }
                     }
                 }
-                .task(id: id) { do { try audio.load(item, url: library.audioURL(item)) } catch { library.error = "Playback is not available for this file. \(error.localizedDescription)" } }
             } else { ContentUnavailableView("Recording not found", systemImage: "waveform") }
         }
         .sheet(isPresented: $asking) {
@@ -282,6 +310,9 @@ struct RecordingDetailView: View {
         } message: { Text("Your iPhone copy will stay.") }
         .sheet(isPresented: Binding(get: { exportURL != nil }, set: { if !$0 { exportURL = nil } })) {
             if let url = exportURL { ShareSheet(items: [url]) }
+        }
+        .alert(remindersAdded == 1 ? "Added 1 reminder" : "Added \(remindersAdded ?? 0) reminders", isPresented: Binding(get: { remindersAdded != nil }, set: { if !$0 { remindersAdded = nil } })) {
+            Button("OK") { remindersAdded = nil }
         }
         .sheet(item: $editingSegment) { segment in
             NavigationStack {
@@ -357,7 +388,18 @@ struct RecordingDetailView: View {
             }
             else { Text(.init(item.summary)).textSelection(.enabled) }
             if !item.actions.isEmpty {
-                Text("Action items").font(.title3.bold())
+                HStack {
+                    Text("Action items").font(.title3.bold())
+                    Spacer()
+                    if item.actions.contains(where: { !$0.done }) {
+                        Button("Add to Reminders", systemImage: "checklist") {
+                            Task {
+                                do { let count = try await Reminders.add(item.actions, from: item); remindersAdded = count }
+                                catch { library.error = error.localizedDescription }
+                            }
+                        }.font(.subheadline).labelStyle(.iconOnly).frame(minWidth: 44, minHeight: 44)
+                    }
+                }
                 ForEach(item.actions) { action in
                     Button {
                         change { try library.update(id) { local in if let index = local.actions.firstIndex(where: { $0.id == action.id }) { local.actions[index].done.toggle(); local.actionsAreLocal = true } } }
@@ -411,9 +453,16 @@ struct RecordingDetailView: View {
                                 .font(.caption).frame(minHeight: 44)
                         }
                     }
-                    Text(segment.text).textSelection(.enabled).foregroundStyle(current ? .primary : .secondary)
-                        .contextMenu { Button("Edit transcript", systemImage: "pencil") { editedText = segment.text; editingSegment = segment } }
+                    Text(segment.text).foregroundStyle(current ? .primary : .secondary)
+                        .frame(maxWidth: .infinity, alignment: .leading).contentShape(Rectangle())
+                        .onTapGesture { audio.seek(segment.start); audio.resume() }
+                        .accessibilityAddTraits(.isButton).accessibilityHint("Plays from here")
+                        .contextMenu {
+                            Button("Copy", systemImage: "doc.on.doc") { UIPasteboard.general.string = segment.text }
+                            Button("Edit transcript", systemImage: "pencil") { editedText = segment.text; editingSegment = segment }
+                        }
                 }.padding(14).background(current ? Color.indigo.opacity(0.06) : Color(.secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 16))
+                    .id(segment.id)
             }
         }
     }
