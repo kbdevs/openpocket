@@ -30,7 +30,7 @@ struct PocketBridgeApp: App {
             ContentView()
                 .environment(library).environment(processor).environment(audio).environment(pocket).environment(voice)
                 .tint(.indigo)
-                .task { if pocket.rememberedDevice != nil { Notifier.requestPermission() }; pocket.connectRemembered(); await library.recoverLegacyRecordings(); processor.resumePending() }
+                .task { if pocket.rememberedDevice != nil { Notifier.requestPermission() }; pocket.connectRemembered(); await library.recoverLegacyRecordings(); processor.resumePending(); voice.rescanIfRulesChanged() }
                 .onChange(of: audio.error) { _, error in if let error { library.error = error } }
                 .onChange(of: voice.error, initial: true) { _, error in if let error { library.error = error } }
                 .onChange(of: scenePhase) { _, phase in

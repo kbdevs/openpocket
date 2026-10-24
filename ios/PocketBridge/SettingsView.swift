@@ -2,6 +2,7 @@ import SwiftUI
 
 struct SettingsView: View {
     @Environment(VoiceProfileStore.self) private var voice
+    @Environment(PocketDeviceController.self) private var pocket
     @AppStorage("defaultLanguage") private var language = "en"
     @AppStorage("autoProcessImports") private var autoProcess = true
     @AppStorage(NotesTemplates.defaultKey) private var notesStyle = "meeting"
@@ -11,9 +12,20 @@ struct SettingsView: View {
 
     var body: some View {
         @Bindable var voice = voice
+        @Bindable var pocket = pocket
         NavigationStack {
             Form {
-                Section {
+                Section("Pocket") {
+                    NavigationLink { PocketDeviceView() } label: {
+                        VStack(alignment: .leading, spacing: 3) {
+                            Text(pocket.connected ? pocket.deviceName : pocket.rememberedDevice?.name ?? "Pair your Pocket")
+                            Text(pocketDetail).font(.caption).monospacedDigit().foregroundStyle(.secondary)
+                        }
+                    }
+                }
+                Section("General") {
+                    Toggle("Auto sync new recordings", isOn: $pocket.autoSync)
+                    Picker("Transfer", selection: $pocket.preferWiFi) { Text("Wi-Fi").tag(true); Text("Bluetooth").tag(false) }
                     Toggle("Auto-process recordings", isOn: $autoProcess)
                     Picker("Note style", selection: $notesStyle) {
                         ForEach(NotesTemplates.all, id: \.key) { Text($0.name).tag($0.key) }
@@ -46,5 +58,10 @@ struct SettingsView: View {
                 }
             } message: { Text("This removes your saved voice profile and its matches. Recordings and manual speaker names stay.") }
         }
+    }
+
+    private var pocketDetail: String {
+        guard pocket.authenticated else { return pocket.status }
+        return ([pocket.battery.map { "\($0)%" }, pocket.storageFreeMB.map { "\(ByteCountFormatter.string(fromByteCount: Int64($0) * 1_000_000, countStyle: .file)) free" }].compactMap { $0 } + ["Connected"]).joined(separator: " · ")
     }
 }

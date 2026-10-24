@@ -38,6 +38,9 @@ final class PocketDeviceController: NSObject, @preconcurrency CBCentralManagerDe
     /// Recordings listed on Pocket that are not on this iPhone yet.
     var newOnPocket: Int { files.filter { !imported($0) }.count }
     var error: String?
+    var preferWiFi = UserDefaults.standard.object(forKey: "pocket.preferWiFi") as? Bool ?? true {
+        didSet { UserDefaults.standard.set(preferWiFi, forKey: "pocket.preferWiFi") }
+    }
     var autoSync = UserDefaults.standard.bool(forKey: "pocket.autoSync") {
         didSet { UserDefaults.standard.set(autoSync, forKey: "pocket.autoSync") }
     }
@@ -205,10 +208,23 @@ final class PocketDeviceController: NSObject, @preconcurrency CBCentralManagerDe
 
     private func remember(_ device: PocketPeripheral) {
         Notifier.requestPermission()
-        let saved = PocketRememberedDevice(id: device.id, name: device.name)
+        // Pairing the same Pocket again keeps its nickname.
+        let name = rememberedDevice?.id == device.id ? rememberedDevice?.name ?? device.name : device.name
+        deviceName = name
+        let saved = PocketRememberedDevice(id: device.id, name: name)
         guard saved != rememberedDevice else { return }
         saved.save()
         rememberedDevice = saved
+    }
+
+    /// Sets the name the app shows. Pocket's own Bluetooth name does not change.
+    func renameRemembered(_ newName: String) {
+        let name = newName.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard let current = rememberedDevice, !name.isEmpty, name.count <= 40 else { return }
+        let saved = PocketRememberedDevice(id: current.id, name: name)
+        saved.save()
+        rememberedDevice = saved
+        deviceName = name
     }
 
     /// `resume` skips the first setup and lets the reconnect loop connect, so a sleeping

@@ -7,6 +7,8 @@ struct VoiceProfileCredential: Codable, Equatable, Sendable {
     var id: UUID
     var modelID: String
     var vector: [Float]
+    /// Recordings blended into the vector. Nil for profiles saved before learning existed.
+    var samples: Int?
 }
 
 struct VoiceAudioWindow: Equatable, Sendable {
@@ -56,7 +58,11 @@ struct VoiceMatchCandidate: Equatable, Sendable {
 
 enum VoiceMatchPolicy {
     static let dimension = 192
-    static let threshold = 0.65
+    /// Pocket's 32 kbps MP3 scores lower than studio audio, so suggestions start at 0.55.
+    static let threshold = 0.55
+    /// A unique match at or above this is tagged as you without review.
+    static let autoConfirmThreshold = 0.65
+    static let version = 2
     static let ambiguityMargin = 0.05
     static let minimumWindows = 3
 
@@ -440,6 +446,7 @@ final class VoiceProfileStore {
         let duration = try await audioDuration(audioURL)
         let speakers = Array(Set(segments.map(\.speaker).filter { !$0.isEmpty })).sorted()
         var candidates: [VoiceMatchCandidate] = []
+        var means: [String: [Float]] = [:]
         for speaker in speakers {
             try Task.checkCancellation()
             guard canApply(ticket, profileID: candidateProfile.id, recordingID: recordingID, audioFile: audioFile, fingerprint: fingerprint, segments: segments) else {
@@ -453,12 +460,14 @@ final class VoiceProfileStore {
             }
             guard let similarity = VoiceMatchPolicy.suggestionScore(scores) else { continue }
             candidates.append(VoiceMatchCandidate(speaker: speaker, similarity: similarity))
+            means[speaker] = VoiceMatchPolicy.normalizedAverage(vectors)
         }
         try Task.checkCancellation()
         guard canApply(ticket, profileID: candidateProfile.id, recordingID: recordingID, audioFile: audioFile, fingerprint: fingerprint, segments: segments) else {
             throw CancellationError()
         }
         let winner = VoiceMatchPolicy.uniqueSuggestion(candidates)
+        var autoConfirmed = false
         try library.update(recordingID) { local in
             guard local.audioFile == audioFile, local.segments == segments else { return }
             let existing = local.voiceMatches ?? [:]
@@ -469,13 +478,36 @@ final class VoiceProfileStore {
                 let confirmedSpeaker = matches.first { $0.value.confirmed && !$0.value.rejected }?.key
                 if confirmedSpeaker == nil || confirmedSpeaker == winner.speaker {
                     if matches[winner.speaker] == nil {
-                        matches[winner.speaker] = SpeakerVoiceMatch(profileID: candidateProfile.id, similarity: winner.similarity)
+                        let strong = confirmedSpeaker == nil && winner.similarity >= VoiceMatchPolicy.autoConfirmThreshold
+                        matches[winner.speaker] = SpeakerVoiceMatch(profileID: candidateProfile.id, similarity: winner.similarity, confirmed: strong)
+                        autoConfirmed = strong
                     }
                 }
             }
             local.voiceMatches = matches.isEmpty ? nil : matches
             local.voiceProfileChecked = candidateProfile.id
         }
+        if autoConfirmed, let winner, let mean = means[winner.speaker] { learn(mean) }
+    }
+
+    /// Blends a confirmed recording's voice into the profile. Older samples keep most of the weight.
+    private func learn(_ vector: [Float]) {
+        guard var current = profile else { return }
+        let weight = Float(min(current.samples ?? 1, 9))
+        guard let blended = VoiceMatchPolicy.normalized(zip(current.vector, vector).map { ($0 * weight + $1) / (weight + 1) }) else { return }
+        current.vector = blended
+        current.samples = (current.samples ?? 1) + 1
+        guard let encoded = try? Self.encode(current),
+              (try? Keychain.set(encoded, for: keychainAccount, accessibility: kSecAttrAccessibleWhenUnlockedThisDeviceOnly)) != nil else { return }
+        profile = current
+    }
+
+    /// Rechecks every recording once after the matching rules change.
+    func rescanIfRulesChanged() {
+        let key = "voiceMatchVersion.\(keychainAccount)"
+        guard enabled, UserDefaults.standard.integer(forKey: key) < VoiceMatchPolicy.version else { return }
+        UserDefaults.standard.set(VoiceMatchPolicy.version, forKey: key)
+        scanLibrary()
     }
 
     private func embeddings(
@@ -559,7 +591,7 @@ final class VoiceProfileStore {
                   let vector = VoiceMatchPolicy.normalized(stored.vector) else {
                 throw PocketError.message("The saved voice profile does not match the installed voice model.")
             }
-            return VoiceProfileCredential(id: stored.id, modelID: stored.modelID, vector: vector)
+            return VoiceProfileCredential(id: stored.id, modelID: stored.modelID, vector: vector, samples: stored.samples)
         } catch {
             return nil
         }

@@ -7,8 +7,7 @@ struct ContentView: View {
     var body: some View {
         TabView(selection: $selectedTab) {
             LibraryView(openPocket: { selectedTab = 1 }).tabItem { Label("Recordings", systemImage: "waveform") }.tag(0)
-            PocketDeviceView().tabItem { Label("Pocket", systemImage: "externaldrive") }.tag(1)
-            SettingsView().tabItem { Label("Settings", systemImage: "slider.horizontal.3") }.tag(2)
+            SettingsView().tabItem { Label("Settings", systemImage: "slider.horizontal.3") }.tag(1)
         }
         .fullScreenCover(isPresented: Binding(get: { !onboardingDone && pocket.rememberedDevice == nil }, set: { if !$0 { onboardingDone = true } })) {
             OnboardingView { onboardingDone = true }
@@ -87,7 +86,11 @@ struct LibraryView: View {
                     }
                 }
             }
-            .sheet(isPresented: $asking) { AskLibraryView() }
+            .sheet(isPresented: $asking) {
+                AskView(title: "Ask all recordings", suggestions: ["What did I commit to this week?", "What decisions were made recently?", "Who did I talk to most?"]) {
+                    LibraryAsk.context(library.recordings, question: $0)
+                }
+            }
             .searchable(text: $query, prompt: "Titles, transcripts, people")
             .navigationDestination(for: UUID.self) { RecordingDetailView(id: $0) }
             .confirmationDialog("Delete \(pendingDelete?.title ?? "recording")?", isPresented: Binding(get: { pendingDelete != nil }, set: { if !$0 { pendingDelete = nil } }), titleVisibility: .visible) {
@@ -153,9 +156,6 @@ struct RecordingDetailView: View {
     @State private var editFolder = false
     @State private var template = "meeting"
     @State private var generating = false
-    @State private var question = ""
-    @FocusState private var questionFocused: Bool
-    @State private var answer = ""
     @State private var asking = false
     @State private var removeRemote = false
     @State private var exportURL: URL?
@@ -183,10 +183,9 @@ struct RecordingDetailView: View {
                             Button { processor.process(id) } label: { Label(item.status == "failed" ? "Retry processing" : item.backendID != nil ? "Resume processing" : AIConfiguration.canMakeNotes ? "Transcribe and make notes" : "Transcribe", systemImage: "text.badge.waveform") }
                                 .buttonStyle(.borderedProminent).controlSize(.large)
                         }
-                        Picker("View", selection: $section) { Text("Notes").tag("Notes"); Text("Transcript").tag("Transcript"); Text("Ask").tag("Ask") }.pickerStyle(.segmented)
+                        Picker("View", selection: $section) { Text("Notes").tag("Notes"); Text("Transcript").tag("Transcript") }.pickerStyle(.segmented)
                         switch section {
                         case "Transcript": transcript(item)
-                        case "Ask": chat(item)
                         default: notes(item)
                         }
                     }.padding(20)
@@ -194,6 +193,11 @@ struct RecordingDetailView: View {
                 .background(Color(.systemGroupedBackground))
                 .navigationBarTitleDisplayMode(.inline)
                 .toolbar {
+                    if AIConfiguration.canMakeNotes && !item.segments.isEmpty {
+                        ToolbarItem(placement: .topBarTrailing) {
+                            Button { asking = true } label: { Label("Ask", systemImage: "sparkles") }
+                        }
+                    }
                     ToolbarItem(placement: .topBarTrailing) {
                         Menu {
                             Button("Rename", systemImage: "pencil") { title = item.title; editTitle = true }
@@ -214,6 +218,11 @@ struct RecordingDetailView: View {
                 }
                 .task(id: id) { do { try audio.load(item, url: library.audioURL(item)) } catch { library.error = "Playback is not available for this file. \(error.localizedDescription)" } }
             } else { ContentUnavailableView("Recording not found", systemImage: "waveform") }
+        }
+        .sheet(isPresented: $asking) {
+            AskView(title: item?.title ?? "Ask", suggestions: ["What were the decisions?", "What are my action items?", "Summarize this in three bullets"]) { _ in
+                library.recording(id)?.namedSegments ?? []
+            }
         }
         .alert("Rename recording", isPresented: $editTitle) {
             TextField("Title", text: $title)
@@ -405,28 +414,6 @@ struct RecordingDetailView: View {
         }
     }
 
-    private func chat(_ item: Recording) -> some View {
-        VStack(alignment: .leading, spacing: 16) {
-            if !AIConfiguration.canMakeNotes { Text("Questions are not available in this build.").font(.callout).foregroundStyle(.secondary) }
-            TextField("What did we decide?", text: $question, axis: .vertical).textFieldStyle(.roundedBorder).lineLimit(2...5).focused($questionFocused)
-            Button {
-                questionFocused = false
-                asking = true
-                Task {
-                    defer { asking = false }
-                    do { answer = try await AIConfiguration.chat(item.namedSegments, question: question) }
-                    catch { library.error = error.localizedDescription }
-                }
-            } label: {
-                HStack {
-                    if asking { ProgressView() }
-                    Text(asking ? "Getting answer…" : "Ask")
-                }.frame(minHeight: 44)
-            }
-                .buttonStyle(.borderedProminent).disabled(asking || !AIConfiguration.canMakeNotes || item.segments.isEmpty || question.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
-            if !answer.isEmpty { Text(.init(answer)).textSelection(.enabled) }
-        }
-    }
     private func regenerate(_ item: Recording) {
         generating = true
         Task {

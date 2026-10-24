@@ -22,7 +22,8 @@ recorder this app works with.
   Built-in and custom note styles.
 - Ask questions about one recording or across all recordings.
 - People: name speakers once, see their recordings, rename or merge names.
-- On-device voice profile that suggests which speaker is you.
+- On-device voice profile that tags you in new recordings and improves as it
+  matches.
 - Notifications when a recording is processed and when the recorder battery
   is low.
 - Recordings grouped by day, search, folders, bookmarks, playback speed,

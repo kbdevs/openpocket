@@ -28,6 +28,13 @@ struct PocketStatusCard: View {
             }
         }.buttonStyle(.plain)
         if pocket.recordingOnDevice { LiveTranscriptView(live: pocket.live) }
+        if pocket.authenticated {
+            if pocket.recordingOnDevice {
+                Button("Stop recording", systemImage: "stop.circle.fill", role: .destructive) { pocket.stopRecording() }.disabled(pocket.busy)
+            } else {
+                Button("Start recording", systemImage: "record.circle") { pocket.startRecording() }.disabled(pocket.busy).tint(.red)
+            }
+        }
     }
 }
 
@@ -46,42 +53,83 @@ struct LiveTranscriptView: View {
     }
 }
 
-struct AskLibraryView: View {
+/// Chat about one recording or the whole library. Each question gets fresh context.
+struct AskView: View {
     @Environment(LibraryStore.self) private var library
     @Environment(\.dismiss) private var dismiss
+    let title: String
+    let suggestions: [String]
+    let context: (String) -> [TranscriptSegment]
+    @State private var messages: [(question: String, answer: String?)] = []
     @State private var question = ""
-    @State private var answer = ""
-    @State private var asking = false
     @FocusState private var focused: Bool
+    private var asking: Bool { messages.last.map { $0.answer == nil } ?? false }
 
     var body: some View {
         NavigationStack {
-            ScrollView {
-                VStack(alignment: .leading, spacing: 16) {
-                    TextField("What did we decide about pricing?", text: $question, axis: .vertical)
-                        .textFieldStyle(.roundedBorder).lineLimit(2...5).focused($focused)
-                    Button(action: ask) {
-                        HStack { if asking { ProgressView() }; Text(asking ? "Searching recordings…" : "Ask") }.frame(maxWidth: .infinity, minHeight: 44)
-                    }
-                    .buttonStyle(.borderedProminent)
-                    .disabled(asking || question.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
-                    if !answer.isEmpty { Text(.init(answer)).textSelection(.enabled) }
-                }.padding(20)
+            ScrollViewReader { proxy in
+                ScrollView {
+                    LazyVStack(alignment: .leading, spacing: 20) {
+                        if messages.isEmpty {
+                            VStack(alignment: .leading, spacing: 10) {
+                                ForEach(suggestions, id: \.self) { suggestion in
+                                    Button(suggestion) { send(suggestion) }
+                                        .buttonStyle(.bordered).buttonBorderShape(.capsule)
+                                }
+                            }.padding(.top, 8)
+                        }
+                        ForEach(Array(messages.enumerated()), id: \.offset) { index, message in
+                            VStack(alignment: .leading, spacing: 10) {
+                                Text(message.question)
+                                    .padding(.horizontal, 14).padding(.vertical, 10)
+                                    .background(Color.accentColor.opacity(0.18), in: RoundedRectangle(cornerRadius: 18))
+                                    .frame(maxWidth: .infinity, alignment: .trailing)
+                                if let answer = message.answer {
+                                    Text(.init(answer)).textSelection(.enabled)
+                                } else {
+                                    ProgressView().padding(.vertical, 4)
+                                }
+                            }.id(index)
+                        }
+                    }.padding(20)
+                }
+                .scrollDismissesKeyboard(.interactively)
+                .onChange(of: messages.count) { _, count in withAnimation { proxy.scrollTo(count - 1, anchor: .bottom) } }
             }
-            .navigationTitle("Ask all recordings").navigationBarTitleDisplayMode(.inline)
+            .safeAreaInset(edge: .bottom) {
+                HStack(alignment: .bottom, spacing: 8) {
+                    TextField("Ask a question", text: $question, axis: .vertical)
+                        .lineLimit(1...5).focused($focused)
+                        .padding(.horizontal, 14).padding(.vertical, 10)
+                        .background(Color(.secondarySystemBackground), in: RoundedRectangle(cornerRadius: 20))
+                        .onSubmit { send(question) }
+                    Button { send(question) } label: {
+                        Image(systemName: "arrow.up").font(.body.weight(.semibold)).frame(width: 40, height: 40)
+                            .background(Color.accentColor, in: Circle()).foregroundStyle(.white)
+                    }
+                    .accessibilityLabel("Send")
+                    .disabled(asking || question.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+                }
+                .padding(.horizontal, 16).padding(.vertical, 10).background(.bar)
+            }
+            .navigationTitle(title).navigationBarTitleDisplayMode(.inline)
             .toolbar { ToolbarItem(placement: .cancellationAction) { Button("Done") { dismiss() } } }
             .onAppear { focused = true }
         }
     }
 
-    private func ask() {
-        focused = false; asking = true
-        let text = question.trimmingCharacters(in: .whitespacesAndNewlines)
-        let context = LibraryAsk.context(library.recordings, question: text)
+    private func send(_ text: String) {
+        let text = text.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !text.isEmpty, !asking else { return }
+        question = ""
+        messages.append((text, nil))
+        let index = messages.count - 1
+        let segments = context(text)
         Task {
-            defer { asking = false }
-            do { answer = try await AIConfiguration.chat(context, question: text) }
-            catch { library.error = error.localizedDescription }
+            let answer: String
+            do { answer = try await AIConfiguration.chat(segments, question: text) }
+            catch { answer = "Couldn’t answer: \(error.localizedDescription)" }
+            if messages.indices.contains(index) { messages[index].answer = answer }
         }
     }
 }

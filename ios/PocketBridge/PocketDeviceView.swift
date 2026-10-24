@@ -4,13 +4,14 @@ struct PocketDeviceView: View {
     @Environment(PocketDeviceController.self) private var pocket
     @Environment(LibraryStore.self) private var library
     @State private var selected = Set<String>()
-    @State private var wifi = true
     @State private var date = Date()
+    @State private var renaming = false
+    @State private var newName = ""
     private var chosenFiles: [DeviceRecording] { pocket.files.filter { selected.contains($0.id) } }
 
     var body: some View {
         @Bindable var pocket = pocket
-        NavigationStack {
+        Group {
             List {
                 Section {
                     HStack(spacing: 16) {
@@ -71,20 +72,10 @@ struct PocketDeviceView: View {
                     }
                 } else if pocket.authenticated {
                     Section {
-                        Picker("Transfer", selection: $wifi) { Text("Wi-Fi · Fast").tag(true); Text("Bluetooth").tag(false) }.pickerStyle(.segmented).disabled(pocket.busy)
-                        Toggle("Auto sync new recordings", isOn: $pocket.autoSync).disabled(pocket.busy)
                         Button("Load recordings", systemImage: "arrow.down.circle") { selected = []; pocket.refresh() }.disabled(pocket.busy)
                         DatePicker("Only this date", selection: $date, displayedComponents: .date)
                         Button("Load this date") { selected = []; pocket.refresh(date: date) }.disabled(pocket.busy)
                     }
-                    Section {
-                        if pocket.recordingOnDevice {
-                            LiveTranscriptView(live: pocket.live)
-                            Button("Stop recording", role: .destructive) { pocket.stopRecording() }.disabled(pocket.busy)
-                        } else {
-                            Button("Start recording", systemImage: "record.circle") { pocket.startRecording() }.disabled(pocket.busy)
-                        }
-                    } footer: { Text("Experimental. Pocket may ignore these commands.") }
                     if !pocket.files.isEmpty {
                         Section {
                             Button(selected.count == pocket.files.count ? "Clear selection" : "Select new recordings") {
@@ -108,14 +99,23 @@ struct PocketDeviceView: View {
                         }
                     }
                 }
-                if pocket.rememberedDevice != nil && !pocket.busy {
-                    Section { Button("Forget this Pocket", role: .destructive) { pocket.forgetRememberedDevice() } }
+                if let saved = pocket.rememberedDevice, !pocket.busy {
+                    Section {
+                        Button("Rename") { newName = saved.name; renaming = true }
+                        Button("Forget this Pocket", role: .destructive) { pocket.forgetRememberedDevice() }
+                    }
                 }
             }
             .navigationTitle("Pocket")
+            .navigationBarTitleDisplayMode(.inline)
+            .alert("Rename Pocket", isPresented: $renaming) {
+                TextField("Name", text: $newName)
+                Button("Save") { pocket.renameRemembered(newName) }
+                Button("Cancel", role: .cancel) {}
+            }
             .safeAreaInset(edge: .bottom) {
                 if !chosenFiles.isEmpty && pocket.authenticated && !pocket.busy {
-                    Button { pocket.sync(chosenFiles, wifi: wifi) } label: {
+                    Button { pocket.sync(chosenFiles, wifi: pocket.preferWiFi) } label: {
                         Label("Sync \(chosenFiles.count) \(chosenFiles.count == 1 ? "recording" : "recordings")", systemImage: "arrow.down.circle.fill").frame(maxWidth: .infinity)
                     }.buttonStyle(.borderedProminent).controlSize(.large).padding(16).background(.bar)
                 }
