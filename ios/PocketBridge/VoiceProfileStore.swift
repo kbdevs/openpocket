@@ -68,11 +68,11 @@ struct VoiceMatchCandidate: Equatable, Sendable {
 
 enum VoiceMatchPolicy {
     static let dimension = 192
-    /// Pocket's 32 kbps MP3 scores lower than studio audio, so suggestions start at 0.55.
-    static let threshold = 0.55
+    /// Measured on real Pocket recordings: the same voice in another recording scores about 0.55 to 0.75.
+    static let threshold = 0.45
     /// A unique match at or above this is tagged as you without review.
-    static let autoConfirmThreshold = 0.65
-    static let version = 3
+    static let autoConfirmThreshold = 0.52
+    static let version = 4
     static let ambiguityMargin = 0.05
     static let minimumWindows = 3
 
@@ -123,11 +123,11 @@ enum VoiceMatchPolicy {
         return sorted[middle]
     }
 
-    static func suggestionScore(_ scores: [Double]) -> Double? {
-        guard scores.count >= minimumWindows, scores.allSatisfy(\.isFinite),
-              scores.filter({ $0 >= threshold }).count >= 2,
-              let median = median(scores), median >= threshold else { return nil }
-        return median
+    /// Compares the speaker's average voice with the profile. Single 3-second clips from Pocket are too noisy to judge alone.
+    static func suggestionScore(_ vectors: [[Float]], against profile: [Float]) -> Double? {
+        guard vectors.count >= minimumWindows, let mean = normalizedAverage(vectors),
+              let score = cosine(mean, profile), score >= threshold else { return nil }
+        return score
     }
 
     static func uniqueSuggestion(_ candidates: [VoiceMatchCandidate]) -> VoiceMatchCandidate? {
@@ -466,11 +466,9 @@ final class VoiceProfileStore {
             let windows = try VoiceWindowSelector.select(segments, speaker: speaker, duration: duration)
             guard windows.count >= VoiceMatchPolicy.minimumWindows else { notes.append("\(recording.speakerName(speaker)): too little clear speech"); continue }
             let vectors = try await embeddings(windows, audioURL: audioURL, generation: ticket)
-            guard let scores = VoiceMatchPolicy.cosineScores(vectors, against: candidateProfile.vector) else {
-                throw SpeakerEmbeddingError.invalidEmbedding
-            }
-            notes.append("\(recording.speakerName(speaker)): \(Int(((VoiceMatchPolicy.median(scores) ?? 0) * 100).rounded()))% (\(scores.count) clips)")
-            guard let similarity = VoiceMatchPolicy.suggestionScore(scores) else { continue }
+            let average = VoiceMatchPolicy.normalizedAverage(vectors).flatMap { VoiceMatchPolicy.cosine($0, candidateProfile.vector) } ?? 0
+            notes.append("\(recording.speakerName(speaker)): \(Int((average * 100).rounded()))% (\(vectors.count) clips)")
+            guard let similarity = VoiceMatchPolicy.suggestionScore(vectors, against: candidateProfile.vector) else { continue }
             candidates.append(VoiceMatchCandidate(speaker: speaker, similarity: similarity))
             means[speaker] = VoiceMatchPolicy.normalizedAverage(vectors)
         }

@@ -8,11 +8,9 @@ final class VoiceMatchingTests: XCTestCase {
         let profile = vector(1, 0)
         let matching = [vector(1, 0), vector(0.8, 0.6), vector(0.7, sqrt(0.51))]
         let nonmatching = [vector(0, 1), vector(0.1, sqrt(0.99)), vector(0.2, sqrt(0.96))]
-        let matchingScores = try matching.map { try XCTUnwrap(VoiceMatchPolicy.cosine($0, profile)) }
-        let nonmatchingScores = try nonmatching.map { try XCTUnwrap(VoiceMatchPolicy.cosine($0, profile)) }
-
-        XCTAssertNotNil(VoiceMatchPolicy.suggestionScore(matchingScores))
-        XCTAssertNil(VoiceMatchPolicy.suggestionScore(nonmatchingScores))
+        XCTAssertNotNil(VoiceMatchPolicy.suggestionScore(matching, against: profile))
+        XCTAssertNil(VoiceMatchPolicy.suggestionScore(nonmatching, against: profile))
+        XCTAssertNil(VoiceMatchPolicy.suggestionScore(Array(matching.prefix(2)), against: profile))
         XCTAssertNil(VoiceMatchPolicy.normalized([Float](repeating: 0, count: 192)))
         XCTAssertNil(VoiceMatchPolicy.normalized([Float](repeating: 1, count: 191)))
         var invalid = vector(1, 0)
@@ -23,9 +21,7 @@ final class VoiceMatchingTests: XCTestCase {
     }
 
     func testSimilarStrongGroupsSuppressThePossibleMatch() throws {
-        let first = try XCTUnwrap(VoiceMatchPolicy.suggestionScore([0.91, 0.88, 0.86]))
-        let second = try XCTUnwrap(VoiceMatchPolicy.suggestionScore([0.90, 0.87, 0.85]))
-        let distinct = try XCTUnwrap(VoiceMatchPolicy.suggestionScore([0.78, 0.74, 0.72]))
+        let first = 0.88, second = 0.87, distinct = 0.74
 
         XCTAssertNil(VoiceMatchPolicy.uniqueSuggestion([
             VoiceMatchCandidate(speaker: "Speaker 1", similarity: first),
